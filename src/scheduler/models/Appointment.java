@@ -15,11 +15,12 @@ public class Appointment {
     private String contact;
     private URL url;
 
-    public Appointment(Date startTime, Date endTime, String customer, String createdBy) {
+    public Appointment(Date startTime, Date endTime, String customer, String createdBy, String appointmentType) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.customer = customer;
         this.createdBy = createdBy;
+        this.appointmentType = appointmentType;
     }
 
 

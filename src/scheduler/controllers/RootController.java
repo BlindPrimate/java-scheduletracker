@@ -13,18 +13,17 @@ import java.util.Date;
 public class RootController {
 
     @FXML private TableView appointmentTable;
-    @FXML private TableColumn<Appointment, Date> colTime;
+    @FXML private TableColumn<Appointment, Date> colStartTime;
+    @FXML private TableColumn<Appointment, Date> colEndTime;
     @FXML private TableColumn<Appointment, String> colCustomer;
+    @FXML private TableColumn<Appointment, String> colType;
 
 
     @FXML
     public void initialize() {
-
-//        colCustomer.setCellValueFactory(customer -> {
-//            System.out.println(customer);
-//            return new SimpleStringProperty("knock");
-//        });
-        colTime.setCellValueFactory(new PropertyValueFactory<Appointment, Date>("startTime"));
+        colType.setCellValueFactory(new PropertyValueFactory<Appointment, String>("appointmentType"));
+        colStartTime.setCellValueFactory(new PropertyValueFactory<Appointment, Date>("startTime"));
+        colEndTime.setCellValueFactory(new PropertyValueFactory<Appointment, Date>("endTime"));
         colCustomer.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customer"));
 
         appointmentTable.setItems(new AppointmentAccessor().getAllAppointments());

@@ -20,8 +20,10 @@
    <children>
       <TableView fx:id="appointmentTable" prefHeight="200.0" prefWidth="200.0">
         <columns>
-          <TableColumn fx:id="colTime" prefWidth="75.0" text="Time" />
-          <TableColumn fx:id="colCustomer"  prefWidth="75.0" text="Customer" />
+            <TableColumn fx:id="colCustomer"  prefWidth="75.0" text="Customer" />
+            <TableColumn fx:id="colType"  prefWidth="75.0" text="Type" />
+            <TableColumn fx:id="colStartTime" prefWidth="75.0" text="Starting Time" />
+          <TableColumn fx:id="colEndTime" prefWidth="75.0" text="Ending Time" />
         </columns>
       </TableView>
       <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="1">

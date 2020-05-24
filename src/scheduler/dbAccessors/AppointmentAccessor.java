@@ -20,30 +20,30 @@ public class AppointmentAccessor extends DataAccessor {
         this.appointments = FXCollections.observableArrayList();
     }
 
-
     public ObservableList<Appointment> getAllAppointments() {
         try {
             Statement stm = conn.createStatement();
 
-            ResultSet res = stm.executeQuery("select customer.customerId, customer.customerName, user.userName, user.userId, appointment.title, appointment.start, appointment.end   \n" +
-                    "From appointment\n" +
-                    "inner join customer\n" +
-                    "on appointment.customerId = customer.customerId\n" +
-                    "inner join user\n" +
-                    "on appointment.userId = user.userId;");
+            ResultSet res = stm.executeQuery("select customer.customerId, customer.customerName, " +
+                    "user.userName, user.userId, " +
+                    "appointment.title, appointment.type, appointment.start, appointment.end " +
+                    "from appointment " +
+                    "inner join customer " +
+                    "on appointment.customerId = customer.customerId " +
+                    "inner join user " +
+                    "on appointment.userId = user.userId");
             while(res.next()) {
                 String user = res.getString("userName");
                 String customer = res.getString("customerName");
                 Date startTime = res.getDate("start");
+                String type = res.getString("type");
                 Date endTime = res.getDate("end");
-                appointments.add(new Appointment(startTime, endTime, customer, user));
+                appointments.add(new Appointment(startTime, endTime, customer, user, type));
             }
             return appointments;
         } catch (SQLException e) {
             System.out.println("Error retrieving customer appointment data");
             e.printStackTrace();
-        } finally {
-            stm.close();
         }
 
         return null;
