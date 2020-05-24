@@ -1,28 +1,33 @@
 package scheduler.controllers;
 
 import javafx.fxml.FXML;
-import scheduler.dbAccessors.DBConnection;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import scheduler.dbAccessors.AppointmentAccessor;
+import scheduler.models.Appointment;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Date;
 
 
 public class RootController {
 
-    @FXML
-    private void initialize() {
-        Connection conn = new DBConnection().getConnection();
-        try {
-            Statement stm = conn.createStatement();
-            ResultSet set = stm.executeQuery("select * from country");
-            while(set.next()) {
-                System.out.println(set.getString("country"));
-            }
-        } catch (SQLException e ) {
+    @FXML private TableView appointmentTable;
+    @FXML private TableColumn<Appointment, Date> colTime;
+    @FXML private TableColumn<Appointment, String> colCustomer;
 
-        }
+
+    @FXML
+    public void initialize() {
+
+//        colCustomer.setCellValueFactory(customer -> {
+//            System.out.println(customer);
+//            return new SimpleStringProperty("knock");
+//        });
+        colTime.setCellValueFactory(new PropertyValueFactory<Appointment, Date>("startTime"));
+        colCustomer.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customer"));
+
+        appointmentTable.setItems(new AppointmentAccessor().getAllAppointments());
 
     }
 }

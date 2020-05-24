@@ -6,7 +6,7 @@ import java.sql.SQLException;
 public class DBConnection {
     private static Connection conn = null;
 
-    public Connection getConnection() {
+    public static Connection getConnection() {
 
         // return connection if already started
         if (conn != null) {
