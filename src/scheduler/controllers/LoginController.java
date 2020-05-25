@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 
-public class LoginController {
+public class LoginController implements Controller {
 
     @FXML
     private void initialize() {

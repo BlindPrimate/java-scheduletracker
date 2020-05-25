@@ -28,7 +28,7 @@
       </TableView>
       <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="1">
         <buttons>
-          <Button mnemonicParsing="false" text="Add" />
+          <Button onAction="#handleAddAppointment" mnemonicParsing="false" text="Add" />
             <Button mnemonicParsing="false" text="Modify " />
             <Button mnemonicParsing="false" text="Delete" />
             <Button mnemonicParsing="false" text="Exit" />

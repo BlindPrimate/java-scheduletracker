@@ -24,6 +24,8 @@ public class Appointment {
     }
 
 
+
+
     // getters and setters
     public Date getStartTime() {
         return startTime;
