@@ -15,6 +15,9 @@ public class Appointment {
     private String contact;
     private URL url;
 
+    public Appointment() {
+
+    }
     public Appointment(Date startTime, Date endTime, String customer, String createdBy, String appointmentType) {
         this.startTime = startTime;
         this.endTime = endTime;

@@ -13,7 +13,7 @@ public class LoginController implements Controller {
 
     @FXML
     private void initialize() {
-        Connection conn = new DBConnection().getConnection();
+        Connection conn = DBConnection.getConnection();
         try {
             Statement stm = conn.createStatement();
             ResultSet set = stm.executeQuery("select * from country");

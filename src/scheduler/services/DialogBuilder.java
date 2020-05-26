@@ -28,7 +28,6 @@ public class DialogBuilder {
 
         dialog.getDialogPane().setContent(root);
         dialog.initOwner(parentNode.getScene().getWindow());
-        System.out.println("check");
         dialog.show();
     }
 
