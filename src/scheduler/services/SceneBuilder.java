@@ -3,32 +3,44 @@ package scheduler.services;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Dialog;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import scheduler.controllers.Controller;
 
-public class DialogBuilder {
+public class SceneBuilder {
     private Controller controller;
     private Node parentNode;
     private String title;
     private String data;
     private String xmlLocation;
+    private Object objectToPass = null;
 
 
-    public DialogBuilder(Node parentNode, String xmlLocation) {
+    public SceneBuilder(Node parentNode, String xmlLocation) {
         this.parentNode = parentNode;
         this.xmlLocation = xmlLocation;
     }
 
 
-    public void show() throws Exception  {
+    public void show() {
         // create and load dialog
-        Dialog<Parent> dialog = new Dialog<> ();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(xmlLocation));
-        Parent root = loader.load();
+        try {
+            Stage newStage = new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(xmlLocation));
+            Parent root = loader.load();
+            if (this.objectToPass != null) {
+                System.out.println("passed object");
+            }
+            newStage.initOwner(parentNode.getScene().getWindow());
+            newStage.setScene(new Scene(root));
+            newStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-        dialog.getDialogPane().setContent(root);
-        dialog.initOwner(parentNode.getScene().getWindow());
-        dialog.show();
+    public void passObject(Object object) {
+        this.objectToPass = object;
     }
 
 

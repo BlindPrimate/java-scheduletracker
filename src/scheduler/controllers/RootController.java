@@ -7,7 +7,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.models.Appointment;
-import scheduler.services.DialogBuilder;
+import scheduler.services.SceneBuilder;
 
 import java.util.Date;
 
@@ -33,10 +33,19 @@ public class RootController implements Controller {
     }
 
     // event handlers
-    public void handleAddAppointment() throws Exception {
-        DialogBuilder dialog = new DialogBuilder(appointmentTable, "../views/addAppointment.fxml");
-        dialog.show();
+    public void handleAddButton() {
+        SceneBuilder scene = new SceneBuilder(appointmentTable, "../views/makeAppointment.fxml");
+        scene.show();
     }
+    
+    public void handleModifyButton() {
+        Appointment targetAppt = (Appointment)appointmentTable.getSelectionModel().getSelectedItem();
+        SceneBuilder scene = new SceneBuilder(appointmentTable, "../views/makeAppointment.fxml");
+        scene.passObject(targetAppt);
+        scene.show();
+    }
+    
+
 
     public void handleExit() {
         Stage stage = (Stage)appointmentTable.getScene().getWindow();

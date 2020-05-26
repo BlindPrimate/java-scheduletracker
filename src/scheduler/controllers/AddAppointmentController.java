@@ -75,7 +75,7 @@ public class AddAppointmentController implements Controller {
 
     }
 
-    public void handleAddAppointment() {
+    public void handleSave() {
 
         AppointmentAccessor accessor = new AppointmentAccessor();
 
@@ -89,6 +89,10 @@ public class AddAppointmentController implements Controller {
         Timestamp sqlStartTime = Timestamp.valueOf(appointmentStart);
 
     }
+
+//    public void AddAppointment() {
+//
+//    }
 
 
     public void handleExit() {
