@@ -30,7 +30,7 @@
         <buttons>
           <Button onAction="#handleAddButton" mnemonicParsing="false" text="Add" />
             <Button onAction="#handleModifyButton" mnemonicParsing="false" text="Modify " />
-            <Button mnemonicParsing="false" text="Delete" />
+            <Button onAction="#handleDeleteButton" mnemonicParsing="false" text="Delete" />
             <Button mnemonicParsing="false" text="Exit" />
         </buttons>
       </ButtonBar>

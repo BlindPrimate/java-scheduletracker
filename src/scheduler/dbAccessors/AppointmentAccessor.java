@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 import scheduler.models.Appointment;
 
 import java.sql.*;
-import java.util.Date;
 
 public class AppointmentAccessor {
 
@@ -24,7 +23,7 @@ public class AppointmentAccessor {
             // retrieve all appointments INNER JOIN with appointment, customer, and user tables
             ResultSet res = stm.executeQuery("select customer.customerId, customer.customerName, " +
                     "user.userName, user.userId, " +
-                    "appointment.title, appointment.type, appointment.start, appointment.end " +
+                    "appointment.appointmentId, appointment.title, appointment.type, appointment.start, appointment.end " +
                     "from appointment " +
                     "inner join customer " +
                     "on appointment.customerId = customer.customerId " +
@@ -33,12 +32,20 @@ public class AppointmentAccessor {
 
             // loop results and create observable array of appointments
             while(res.next()) {
-                String user = res.getString("userName");
+                int userId = res.getInt("userId");
                 String customer = res.getString("customerName");
-                Date startTime = res.getDate("start");
+                int customerId = res.getInt("customerId");
+                Timestamp startTime = res.getTimestamp("start");
                 String type = res.getString("type");
-                Date endTime = res.getDate("end");
-                appointments.add(new Appointment(startTime, endTime, customer, user, type));
+                Timestamp endTime = res.getTimestamp("end");
+                String title = res.getString("title");
+                int id = res.getInt("appointmentId");
+
+                // format appointments
+                Appointment appointment = new Appointment(startTime, endTime, customerId, userId, type, title);
+                appointment.setCustomerName(customer);
+                appointment.setId(id);
+                appointments.add(appointment);
             }
             return appointments;
         } catch (SQLException e) {
@@ -52,15 +59,38 @@ public class AppointmentAccessor {
     public boolean addAppointment(Appointment appt) {
         try {
             PreparedStatement stm = conn.prepareStatement(
-                    "INSERT INTO `appointment` VALUES " +
-                    "(default,1,1,'not needed','not needed','not needed','not needed','Presentation','not needed','2019-01-01 00:00:00','2019-01-01 00:00:00','2019-01-01 00:00:00','test','2019-01-01 00:00:00','test')"
+                    "INSERT INTO `appointment` VALUES "
+                            + "(default,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,?,CURRENT_TIMESTAMP,?)"
             );
-            ResultSet rs = stm.executeQuery();
+            stm.setInt(1, appt.getCustomerId() ); // customer id
+            stm.setInt(2, appt.getCreatedById() ); // user id
+            stm.setString(3, "" ); // title
+            stm.setString(4, ""); // description
+            stm.setString(5, ""); // location
+            stm.setString(6, ""); // contact
+            stm.setString(7, appt.getAppointmentType()); // type
+            stm.setString(8, ""); // url
+            stm.setTimestamp(9, appt.getStartTime() ); // start time
+            stm.setTimestamp(10, appt.getEndTime() ); // end time
+            stm.setString(11, appt.getCreatedBy() ); //  user
+            stm.setString(12, appt.getCreatedBy()); //  last updated by - user
+            stm.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Error retrieving customer appointment data");
+            System.out.println("Error inserting new appointment into database");
             e.printStackTrace();
         } finally {
             return true;
+        }
+    }
+    public void deleteAppointment(int customerId) {
+        System.out.println(customerId);
+        try {
+            PreparedStatement st = conn.prepareStatement( "DELETE FROM appointment WHERE appointmentId=?");
+            st.setInt(1, customerId);
+            st.execute();
+        } catch (Exception e) {
+            System.out.println("Error deleting appointment");
+            e.printStackTrace();
         }
     }
 }

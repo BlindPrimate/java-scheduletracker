@@ -1,12 +1,15 @@
 package scheduler.models;
 
 import java.net.URL;
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class Appointment {
-    private Date startTime;
-    private Date endTime;
-    private String customer;
+    private int id;
+    private Timestamp startTime;
+    private Timestamp endTime;
+    private String customerName;
+    private int customerId;
+    private int createdById;
     private String createdBy;
     private String appointmentType;
     private String title;
@@ -15,43 +18,70 @@ public class Appointment {
     private String contact;
     private URL url;
 
+
     public Appointment() {
 
     }
-    public Appointment(Date startTime, Date endTime, String customer, String createdBy, String appointmentType) {
+
+    public Appointment(Timestamp startTime, Timestamp endTime, int customerId, int createdById, String appointmentType, String title) {
         this.startTime = startTime;
         this.endTime = endTime;
-        this.customer = customer;
-        this.createdBy = createdBy;
+        this.customerId = customerId;
+        this.createdById = createdById;
         this.appointmentType = appointmentType;
+        this.title = title;
     }
 
-
-
-
     // getters and setters
-    public Date getStartTime() {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public int getCreatedById() {
+        return createdById;
+    }
+
+    public void setCreatedById(int createdById) {
+        this.createdById = createdById;
+    }
+    public Timestamp getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public Timestamp getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(Timestamp endTime) {
         this.endTime = endTime;
     }
 
-    public String getCustomer() {
-        return customer;
+    public int getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomer(String customer) {
-        this.customer = customer;
+    public void setCustomer(int customer) {
+        this.customerId = customer;
     }
 
     public String getCreatedBy() {

@@ -78,6 +78,7 @@ public class AddAppointmentController implements Controller {
     public void handleSave() {
 
         AppointmentAccessor accessor = new AppointmentAccessor();
+        Appointment appointment = new Appointment();
 
         // set appointment attributes
         currentAppointment.setTitle(fieldTitle.getText().trim());
@@ -87,6 +88,15 @@ public class AddAppointmentController implements Controller {
         LocalDateTime appointmentStart = LocalDateTime.of(choiceStartDate.getValue(), startTime);
 
         Timestamp sqlStartTime = Timestamp.valueOf(appointmentStart);
+
+        appointment.setStartTime(sqlStartTime);
+        appointment.setEndTime(sqlStartTime);
+        appointment.setAppointmentType("scrum");
+        appointment.setCreatedBy("bonkers");
+        appointment.setCustomerId(1);
+        appointment.setCreatedById(1);
+
+        accessor.addAppointment(appointment);
 
     }
 

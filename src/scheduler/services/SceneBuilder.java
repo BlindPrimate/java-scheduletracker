@@ -28,6 +28,8 @@ public class SceneBuilder {
             Stage newStage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource(xmlLocation));
             Parent root = loader.load();
+
+            // handle object passing to new controller
             if (this.objectToPass != null) {
                 System.out.println("passed object");
             }
