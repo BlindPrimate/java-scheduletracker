@@ -2,6 +2,7 @@ package scheduler.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -17,7 +18,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
+import java.time.format.ResolverStyle;
+import java.util.function.Predicate;
 
 public class AddAppointmentController implements Controller {
     @FXML
@@ -43,15 +47,15 @@ public class AddAppointmentController implements Controller {
     @FXML
     ChoiceBox<String> choiceEndTime;
 
-    private ObservableList<String> appointmentTimes = FXCollections.observableArrayList();
+    private ObservableList<String> appointmentStartTimes = FXCollections.observableArrayList();
+    private ObservableList<String> appointmentEndTimes = FXCollections.observableArrayList();
+    private FilteredList<String> filteredEndTimes = new FilteredList<String>(appointmentEndTimes);
     private DateTimeFormatter parseTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
-
 
     Appointment currentAppointment = new Appointment();
 
     @FXML
     public void initialize() {
-
 
         // load customer names in dropdown
         CustomerAccessor access = new CustomerAccessor();
@@ -65,14 +69,33 @@ public class AddAppointmentController implements Controller {
 
         // create dropdown items for appointment hours
         while (!time.equals(LocalTime.of(18, 0))) {
-            appointmentTimes.add(time.format(parseTime));
+            appointmentStartTimes.add(time.format(parseTime));
+            appointmentEndTimes.add(time.format(parseTime));
             time = time.plusMinutes(15);
         }
-        choiceStartTime.setItems(appointmentTimes);
-        choiceStartTime.setValue(appointmentTimes.get(0));
-        choiceEndTime.setItems(appointmentTimes);
-        choiceEndTime.setValue(appointmentTimes.get(1));
+        choiceStartTime.setItems(appointmentStartTimes);
+        choiceStartTime.setValue(appointmentStartTimes.get(0));
+        choiceEndTime.setItems(filteredEndTimes);
+        choiceEndTime.setValue(filteredEndTimes.get(1));
 
+        // filter predicate to remove times eariler than start time from end time list
+        Predicate predicate = (endTime) -> {
+            // formatter to read time strings -- turn into LocalTime
+            DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .parseStrict()
+                .appendPattern("h:mm a")
+                .toFormatter()
+                .withResolverStyle(ResolverStyle.STRICT);
+            LocalTime startTime = LocalTime.parse(choiceStartTime.getValue(), formatter);
+            LocalTime endTimeToFilter = LocalTime.parse(endTime.toString(), formatter);
+            return endTimeToFilter.isAfter(startTime);
+        };
+
+        // filter list to remove times later than chosen start time
+        choiceStartTime.setOnAction((event) -> {
+            filteredEndTimes.setPredicate(null);
+            filteredEndTimes.setPredicate(predicate);
+        });
     }
 
     public void handleSave() {
@@ -100,10 +123,10 @@ public class AddAppointmentController implements Controller {
 
     }
 
-//    public void AddAppointment() {
+//    public boolean isValidForm() {
+//
 //
 //    }
-
 
     public void handleExit() {
         Stage stage = (Stage)mainPane.getScene().getWindow();
