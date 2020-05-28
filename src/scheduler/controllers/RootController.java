@@ -1,5 +1,6 @@
 package scheduler.controllers;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -10,14 +11,15 @@ import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.models.Appointment;
 import scheduler.services.SceneBuilder;
 
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 
 public class RootController {
 
     @FXML private TableView<Appointment> appointmentTable;
-    @FXML private TableColumn<Appointment, Date> colStartTime;
-    @FXML private TableColumn<Appointment, Date> colEndTime;
+    @FXML private TableColumn<Appointment, String> colStartTime;
+    @FXML private TableColumn<Appointment, String> colEndTime;
     @FXML private TableColumn<Appointment, String> colCustomer;
     @FXML private TableColumn<Appointment, String> colType;
     private ObservableList<Appointment>  appointments;
@@ -32,20 +34,28 @@ public class RootController {
         return instance;
     }
 
+    // singleton
     private RootController() {
-
     }
 
     @FXML
     public void initialize() {
+
+        DateTimeFormatter readableTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+
         colType.setCellValueFactory(new PropertyValueFactory<Appointment, String>("appointmentType"));
-        colStartTime.setCellValueFactory(new PropertyValueFactory<Appointment, Date>("startTime"));
-        colEndTime.setCellValueFactory(new PropertyValueFactory<Appointment, Date>("endTime"));
+        colStartTime.setCellValueFactory(columnData -> {
+            String t = columnData.getValue().getStartTimeStamp().toLocalDateTime().format(readableTime);
+            return new SimpleObjectProperty<>(t);
+        });
+        colEndTime.setCellValueFactory(columnData -> {
+            String t = columnData.getValue().getEndTimeStamp().toLocalDateTime().format(readableTime);
+            return new SimpleObjectProperty<>(t);
+        });
         colCustomer.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customerName"));
         populateAppointments();
         appointmentTable.setItems(appointments);
         appointmentTable.getSelectionModel().select(0);
-
 
 
     }
@@ -76,7 +86,6 @@ public class RootController {
         accessor.deleteAppointment(appt.getId());
         appointments.remove(appointmentTable.getSelectionModel().getSelectedIndex());
     }
-    
 
 
     public void handleExit() {

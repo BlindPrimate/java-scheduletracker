@@ -48,6 +48,10 @@ public abstract class AppointmentController {
 
     protected Appointment currentAppointment = new Appointment();
 
+    public AppointmentController() {
+    }
+
+
 
     public static ObservableList<String> buildAppointmentTime() {
         ObservableList<String> appointmentTimes = FXCollections.observableArrayList();

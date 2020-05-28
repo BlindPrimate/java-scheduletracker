@@ -21,14 +21,15 @@ public class AppointmentAccessor {
             Statement stm = conn.createStatement();
 
             // retrieve all appointments INNER JOIN with appointment, customer, and user tables
-            ResultSet res = stm.executeQuery("select customer.customerId, customer.customerName, " +
-                    "user.userName, user.userId, " +
-                    "appointment.appointmentId, appointment.title, appointment.type, appointment.start, appointment.end " +
-                    "from appointment " +
-                    "inner join customer " +
-                    "on appointment.customerId = customer.customerId " +
-                    "inner join user " +
-                    "on appointment.userId = user.userId");
+            ResultSet res = stm.executeQuery("select customer.customerId, customer.customerName, "
+                    + "user.userName, user.userId, "
+                    + "appointment.appointmentId, appointment.title, appointment.type,"
+                    + "appointment.start, appointment.end, appointment.description "
+                    + "from appointment "
+                    + "inner join customer "
+                    + "on appointment.customerId = customer.customerId "
+                    + "inner join user "
+                    + "on appointment.userId = user.userId");
 
             // loop results and create observable array of appointments
             while(res.next()) {
@@ -39,12 +40,14 @@ public class AppointmentAccessor {
                 String type = res.getString("type");
                 Timestamp endTime = res.getTimestamp("end");
                 String title = res.getString("title");
+                String description = res.getString("description");
                 int id = res.getInt("appointmentId");
 
                 // format appointments
                 Appointment appointment = new Appointment(startTime, endTime, customerId, userId, type, title);
                 appointment.setCustomerName(customer);
                 appointment.setId(id);
+                appointment.setDescription(description);
                 appointments.add(appointment);
             }
             return appointments;

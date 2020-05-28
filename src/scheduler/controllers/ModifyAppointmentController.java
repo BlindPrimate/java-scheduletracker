@@ -8,22 +8,18 @@ import scheduler.models.Appointment;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.ResolverStyle;
 import java.util.function.Predicate;
 
 public class ModifyAppointmentController extends AppointmentController {
 
     public ModifyAppointmentController(Appointment appointment) {
+        super();
         this.appointment = appointment;
     }
 
 
     @FXML
     public void initialize() {
-
-//        field.setText()
 
         // fill observables for appointment time listings
         appointmentStartTimes = AppointmentController.buildAppointmentTime();
@@ -41,20 +37,29 @@ public class ModifyAppointmentController extends AppointmentController {
         // filter predicate to remove times earlier than start time from end time list
         Predicate<String> predicate = (endTime) -> {
             // formatter to read time strings -- turn into LocalTime
-            DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-                .parseStrict()
-                .appendPattern("h:mm a")
-                .toFormatter()
-                .withResolverStyle(ResolverStyle.STRICT);
-            LocalTime startTime = LocalTime.parse(choiceStartTime.getValue(), formatter);
-            LocalTime endTimeToFilter = LocalTime.parse(endTime.toString(), formatter);
+            LocalTime startTime = LocalTime.parse(choiceStartTime.getValue(), parseTime);
+            LocalTime endTimeToFilter = LocalTime.parse(endTime.toString(), parseTime);
             return endTimeToFilter.isAfter(startTime);
         };
 
         // filter list to remove times later than chosen start time
         choiceStartTime.setOnAction((event) -> {
+
+            // keep end times where they are if chosen end time is after chosen start time at time of choice
+            int starTimeIndex = choiceStartTime.getSelectionModel().getSelectedIndex();
+            int endTimeIndex = choiceEndTime.getSelectionModel().getSelectedIndex();
+            int indexDiff = endTimeIndex - starTimeIndex;
+
+            // filter end times
             filteredEndTimes.setPredicate(null);
             filteredEndTimes.setPredicate(predicate);
+
+            // smart end time setting after filter
+            if (indexDiff > 0) {
+                choiceEndTime.setValue(filteredEndTimes.get(indexDiff));
+            } else {
+                choiceEndTime.setValue(filteredEndTimes.get(0));
+            }
         });
     }
 
@@ -62,14 +67,13 @@ public class ModifyAppointmentController extends AppointmentController {
     public void initData() {
 
         // fill start end times with appointment data
-        System.out.println(appointment.getStartTimeStamp().toLocalDateTime().format(parseTime));
-        System.out.println(appointment.getEndTimeStamp().toLocalDateTime().format(parseTime));
-        choiceStartTime.setValue(appointment.getStartTimeStamp().toLocalDateTime().format(parseTime));
-        choiceEndTime.setValue(appointment.getEndTimeStamp().toLocalDateTime().format(parseTime));
+//        choiceStartTime.setValue(appointment.getStartTimeStamp().toLocalDateTime().format(parseTime));
+//        choiceEndTime.setValue(appointment.getEndTimeStamp().toLocalDateTime().format(parseTime));
 
         fieldTitle.setText(appointment.getTitle());
         fieldDescription.setText(appointment.getDescription());
         fieldType.setText(appointment.getAppointmentType());
+
     }
 
     public void handleSave() {

@@ -10,14 +10,12 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.ResolverStyle;
 import java.util.function.Predicate;
 
 public class AddAppointmentController extends AppointmentController {
 
-    public void AddAppointmentController() {
+    public AddAppointmentController() {
+        super();
     }
 
     @FXML
@@ -44,23 +42,34 @@ public class AddAppointmentController extends AppointmentController {
         choiceEndTime.setItems(filteredEndTimes);
         choiceEndTime.setValue(filteredEndTimes.get(1));
 
-        // filter predicate to remove times eariler than start time from end time list
-        Predicate predicate = (endTime) -> {
+
+        // filter predicate to remove times earlier than start time from end time list
+        Predicate<String> predicate = (endTime) -> {
             // formatter to read time strings -- turn into LocalTime
-            DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-                .parseStrict()
-                .appendPattern("h:mm a")
-                .toFormatter()
-                .withResolverStyle(ResolverStyle.STRICT);
-            LocalTime startTime = LocalTime.parse(choiceStartTime.getValue(), formatter);
-            LocalTime endTimeToFilter = LocalTime.parse(endTime.toString(), formatter);
+            LocalTime startTime = LocalTime.parse(choiceStartTime.getValue(), parseTime);
+            LocalTime endTimeToFilter = LocalTime.parse(endTime.toString(), parseTime);
             return endTimeToFilter.isAfter(startTime);
         };
 
+
         // filter list to remove times later than chosen start time
         choiceStartTime.setOnAction((event) -> {
+
+            // keep end times where they are if chosen end time is after chosen start time at time of choice
+            int starTimeIndex = choiceStartTime.getSelectionModel().getSelectedIndex();
+            int endTimeIndex = choiceEndTime.getSelectionModel().getSelectedIndex();
+            int indexDiff = endTimeIndex - starTimeIndex;
+
+            // filter end times
             filteredEndTimes.setPredicate(null);
             filteredEndTimes.setPredicate(predicate);
+
+            // smart end time setting after filter
+            if (indexDiff > 0) {
+                choiceEndTime.setValue(filteredEndTimes.get(indexDiff));
+            } else {
+                choiceEndTime.setValue(filteredEndTimes.get(0));
+            }
         });
     }
 
@@ -103,7 +112,6 @@ public class AddAppointmentController extends AppointmentController {
 
     public void handleExit() {
         Stage stage = (Stage)mainPane.getScene().getWindow();
-//        RootController.getInstance().populateAppointments();
         stage.close();
     }
 }
