@@ -5,18 +5,22 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import scheduler.controllers.Controller;
+import javafx.stage.WindowEvent;
+import scheduler.controllers.AppointmentController;
+import scheduler.controllers.ModifyAppointmentController;
+import scheduler.controllers.RootController;
 
 public class SceneBuilder {
-    private Controller controller;
     private Node parentNode;
     private String title;
     private String data;
     private String xmlLocation;
     private Object objectToPass = null;
+    private AppointmentController controller;
 
 
-    public SceneBuilder(Node parentNode, String xmlLocation) {
+    public SceneBuilder(Node parentNode, AppointmentController controller, String xmlLocation) {
+        this.controller = controller;
         this.parentNode = parentNode;
         this.xmlLocation = xmlLocation;
     }
@@ -27,12 +31,16 @@ public class SceneBuilder {
         try {
             Stage newStage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource(xmlLocation));
+            loader.setController(controller);
             Parent root = loader.load();
 
-            // handle object passing to new controller
-            if (this.objectToPass != null) {
-                System.out.println("passed object");
+            if (controller instanceof ModifyAppointmentController) {
+                ((ModifyAppointmentController) controller).initData();
             }
+
+            newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
+                RootController.getInstance().populateAppointments();
+            });
             newStage.initOwner(parentNode.getScene().getWindow());
             newStage.setScene(new Scene(root));
             newStage.show();
@@ -41,18 +49,6 @@ public class SceneBuilder {
         }
     }
 
-    public void passObject(Object object) {
-        this.objectToPass = object;
-    }
-
-
-    public Controller getController() {
-        return controller;
-    }
-
-    public void setController(Controller controller) {
-        this.controller = controller;
-    }
 
     public Node getParentNode() {
         return parentNode;

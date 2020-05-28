@@ -60,17 +60,27 @@ public class Appointment {
     public void setCreatedById(int createdById) {
         this.createdById = createdById;
     }
-    public Timestamp getStartTime() {
-        return startTime;
+    public String getStartTime() {
+        return startTime.toString();
     }
 
     public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
     }
 
-    public Timestamp getEndTime() {
-        return endTime;
+    public Timestamp getStartTimeStamp() {
+        return (Timestamp)startTime;
     }
+
+
+    public String getEndTime() {
+        return endTime.toString();
+    }
+
+    public Timestamp getEndTimeStamp() {
+        return (Timestamp)endTime;
+    }
+
 
     public void setEndTime(Timestamp endTime) {
         this.endTime = endTime;

@@ -5,14 +5,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import scheduler.controllers.RootController;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("views/root.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("views/root.fxml"));
+        loader.setController(RootController.getInstance());
+        Parent root = loader.load();
         primaryStage.setTitle("Schedule Maker");
         primaryStage.setScene(new Scene(root, 500, 475));
+
         primaryStage.show();
     }
 

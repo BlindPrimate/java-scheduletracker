@@ -70,8 +70,8 @@ public class AppointmentAccessor {
             stm.setString(6, ""); // contact
             stm.setString(7, appt.getAppointmentType()); // type
             stm.setString(8, ""); // url
-            stm.setTimestamp(9, appt.getStartTime() ); // start time
-            stm.setTimestamp(10, appt.getEndTime() ); // end time
+            stm.setTimestamp(9, appt.getStartTimeStamp() ); // start time
+            stm.setTimestamp(10, appt.getEndTimeStamp() ); // end time
             stm.setString(11, appt.getCreatedBy() ); //  user
             stm.setString(12, appt.getCreatedBy()); //  last updated by - user
             stm.executeUpdate();
@@ -92,5 +92,8 @@ public class AppointmentAccessor {
             System.out.println("Error deleting appointment");
             e.printStackTrace();
         }
+    }
+    public void modifyAppointment(Appointment appointment) {
+        System.out.println("modified");
     }
 }

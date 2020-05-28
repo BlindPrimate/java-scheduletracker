@@ -13,7 +13,7 @@ import scheduler.services.SceneBuilder;
 import java.util.Date;
 
 
-public class RootController implements Controller {
+public class RootController {
 
     @FXML private TableView<Appointment> appointmentTable;
     @FXML private TableColumn<Appointment, Date> colStartTime;
@@ -21,33 +21,52 @@ public class RootController implements Controller {
     @FXML private TableColumn<Appointment, String> colCustomer;
     @FXML private TableColumn<Appointment, String> colType;
     private ObservableList<Appointment>  appointments;
+    private AppointmentAccessor accessor;
 
+    private static RootController instance = null;
+
+    public static RootController getInstance() {
+        if (instance == null) {
+            instance = new RootController();
+        }
+        return instance;
+    }
+
+    private RootController() {
+
+    }
 
     @FXML
     public void initialize() {
-        this.appointments = new AppointmentAccessor().getAllAppointments();
         colType.setCellValueFactory(new PropertyValueFactory<Appointment, String>("appointmentType"));
         colStartTime.setCellValueFactory(new PropertyValueFactory<Appointment, Date>("startTime"));
         colEndTime.setCellValueFactory(new PropertyValueFactory<Appointment, Date>("endTime"));
         colCustomer.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customerName"));
         populateAppointments();
+        appointmentTable.setItems(appointments);
         appointmentTable.getSelectionModel().select(0);
+
+
+
     }
 
-    private void populateAppointments() {
+    public void populateAppointments() {
+        appointments = new AppointmentAccessor().getAllAppointments();
         appointmentTable.setItems(appointments);
+//        System.out.println(appointments.toString());
     }
 
     // event handlers
     public void handleAddButton() {
-        SceneBuilder scene = new SceneBuilder(appointmentTable, "../views/makeAppointment.fxml");
+        AddAppointmentController controller = new AddAppointmentController();
+        SceneBuilder scene = new SceneBuilder(appointmentTable, controller, "../views/makeAppointment.fxml");
         scene.show();
     }
     
     public void handleModifyButton() {
         Appointment targetAppt = (Appointment)appointmentTable.getSelectionModel().getSelectedItem();
-        SceneBuilder scene = new SceneBuilder(appointmentTable, "../views/makeAppointment.fxml");
-        scene.passObject(targetAppt);
+        ModifyAppointmentController controller = new ModifyAppointmentController(targetAppt);
+        SceneBuilder scene = new SceneBuilder(appointmentTable, controller, "../views/makeAppointment.fxml");
         scene.show();
     }
 
