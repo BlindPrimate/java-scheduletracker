@@ -4,12 +4,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import scheduler.models.Appointment;
+import scheduler.models.Customer;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -22,46 +24,57 @@ public abstract class AppointmentController {
     @FXML
     TextField fieldTitle;
     @FXML
-    TextField fieldDescription;
+    ComboBox<String> comboType;
     @FXML
-    TextField fieldLocation;
-    @FXML
-    TextField fieldType;
-    @FXML
-    TextField fieldUrl;
-    @FXML
-    ChoiceBox<String> choiceCustomer;
+    ComboBox<Customer> choiceCustomer;
     @FXML
     DatePicker choiceStartDate;
     @FXML
-    ChoiceBox<String> choiceStartTime;
+    ComboBox<LocalTime> choiceStartTime;
     @FXML
     DatePicker choiceEndDate;
     @FXML
-    ChoiceBox<String> choiceEndTime;
+    ComboBox<LocalTime> choiceEndTime;
 
     protected Appointment appointment;
-    protected ObservableList<String> appointmentStartTimes = FXCollections.observableArrayList();
-    protected ObservableList<String> appointmentEndTimes = FXCollections.observableArrayList();
-    protected FilteredList<String> filteredEndTimes = new FilteredList<String>(appointmentEndTimes);
+    protected ObservableList<LocalTime> appointmentStartTimes = FXCollections.observableArrayList();
+    protected ObservableList<LocalTime> appointmentEndTimes = FXCollections.observableArrayList();
+    protected FilteredList<LocalTime> filteredEndTimes = new FilteredList<>(appointmentEndTimes);
     protected static final DateTimeFormatter parseTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
     protected Appointment currentAppointment = new Appointment();
+
+
+
+
+    protected ListCell<LocalTime> timeFactory() {
+        return new ListCell<LocalTime>() {
+            @Override
+            protected void updateItem(LocalTime localTime, boolean empty) {
+                super.updateItem(localTime, empty);
+                if (localTime == null || empty) {
+                    setText(null);
+                } else {
+                    setText(localTime.format(parseTime));
+                }
+            }
+        };
+    };
+
 
     public AppointmentController() {
     }
 
 
-
-    public static ObservableList<String> buildAppointmentTime() {
-        ObservableList<String> appointmentTimes = FXCollections.observableArrayList();
+    public static ObservableList<LocalTime> buildAppointmentTime() {
+        ObservableList<LocalTime> appointmentTimes = FXCollections.observableArrayList();
 
         // set opening hours to 7am
         LocalTime time = LocalTime.of(8, 0);
 
         // create dropdown items for appointment hours
         while (!time.equals(LocalTime.of(17, 0))) {
-            appointmentTimes.add(time.format(parseTime));
+            appointmentTimes.add(time);
             time = time.plusMinutes(15);
         }
         return appointmentTimes;

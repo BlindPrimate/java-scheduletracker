@@ -5,8 +5,6 @@ import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.dbAccessors.CustomerAccessor;
 import scheduler.models.Appointment;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.function.Predicate;
 
@@ -27,7 +25,7 @@ public class ModifyAppointmentController extends AppointmentController {
 
         // load customer names in dropdown
         CustomerAccessor access = new CustomerAccessor();
-        choiceCustomer.setItems(access.getAllCustomerNames());
+        choiceCustomer.setItems(access.getAllCustomers());
 
 
         choiceStartTime.setItems(appointmentStartTimes);
@@ -35,9 +33,9 @@ public class ModifyAppointmentController extends AppointmentController {
 
 
         // filter predicate to remove times earlier than start time from end time list
-        Predicate<String> predicate = (endTime) -> {
+        Predicate<LocalTime> predicate = (endTime) -> {
             // formatter to read time strings -- turn into LocalTime
-            LocalTime startTime = LocalTime.parse(choiceStartTime.getValue(), parseTime);
+            LocalTime startTime = choiceStartTime.getValue();
             LocalTime endTimeToFilter = LocalTime.parse(endTime.toString(), parseTime);
             return endTimeToFilter.isAfter(startTime);
         };
@@ -71,9 +69,6 @@ public class ModifyAppointmentController extends AppointmentController {
 //        choiceEndTime.setValue(appointment.getEndTimeStamp().toLocalDateTime().format(parseTime));
 
         fieldTitle.setText(appointment.getTitle());
-        fieldDescription.setText(appointment.getDescription());
-        fieldType.setText(appointment.getAppointmentType());
-
     }
 
     public void handleSave() {
@@ -82,15 +77,14 @@ public class ModifyAppointmentController extends AppointmentController {
 
         // set appointment attributes
         currentAppointment.setTitle(fieldTitle.getText().trim());
-        currentAppointment.setDescription(fieldDescription.getText().trim());
 
-        LocalTime startTime = LocalTime.parse(choiceStartTime.getValue(), parseTime);
-        LocalDateTime appointmentStart = LocalDateTime.of(choiceStartDate.getValue(), startTime);
+        LocalTime startTime = choiceStartTime.getValue();
+//        LocalDateTime appointmentStart = choiceStartDate.getValue(), startTime);
 
-        Timestamp sqlStartTime = Timestamp.valueOf(appointmentStart);
+//        Timestamp sqlStartTime = Timestamp.valueOf(appointmentStart);
 
-        appointment.setStartTime(sqlStartTime);
-        appointment.setEndTime(sqlStartTime);
+//        appointment.setStartTime(sqlStartTime);
+//        appointment.setEndTime(sqlStartTime);
         appointment.setAppointmentType("scrum");
         appointment.setCreatedBy("bonkers");
         appointment.setCustomerId(1);
