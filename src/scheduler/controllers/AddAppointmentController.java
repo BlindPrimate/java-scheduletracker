@@ -24,6 +24,7 @@ public class AddAppointmentController extends AppointmentController {
     @FXML
     public void initialize() {
 
+
         // load customer names in dropdown
         CustomerAccessor access = new CustomerAccessor();
         choiceCustomer.setItems(access.getAllCustomers());

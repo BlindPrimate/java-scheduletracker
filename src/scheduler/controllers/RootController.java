@@ -3,13 +3,16 @@ package scheduler.controllers;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.models.Appointment;
-import scheduler.services.SceneBuilder;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -27,15 +30,8 @@ public class RootController {
 
     private static RootController instance = null;
 
-    public static RootController getInstance() {
-        if (instance == null) {
-            instance = new RootController();
-        }
-        return instance;
-    }
-
     // singleton
-    private RootController() {
+    public RootController() {
     }
 
     @FXML
@@ -68,16 +64,40 @@ public class RootController {
 
     // event handlers
     public void handleAddButton() {
-        AddAppointmentController controller = new AddAppointmentController();
-        SceneBuilder scene = new SceneBuilder(appointmentTable, controller, "../views/makeAppointment.fxml");
-        scene.show();
+        try {
+            Stage newStage = new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/makeAppointment.fxml"));
+            loader.setController(new AddAppointmentController());
+            Parent root = loader.load();
+
+            // refresh table of appointments on return to main screen
+            newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
+            });
+            newStage.initOwner(appointmentTable.getScene().getWindow());
+            newStage.setScene(new Scene(root));
+            newStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     public void handleModifyButton() {
-        Appointment targetAppt = (Appointment)appointmentTable.getSelectionModel().getSelectedItem();
-        ModifyAppointmentController controller = new ModifyAppointmentController(targetAppt);
-        SceneBuilder scene = new SceneBuilder(appointmentTable, controller, "../views/makeAppointment.fxml");
-        scene.show();
+        try {
+            Stage newStage = new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/makeAppointment.fxml"));
+            // load controller with selected appointment
+            loader.setController(new ModifyAppointmentController(appointmentTable.getSelectionModel().getSelectedItem()));
+            Parent root = loader.load();
+
+            // refresh table of appointments on return to main screen
+            newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
+            });
+            newStage.initOwner(appointmentTable.getScene().getWindow());
+            newStage.setScene(new Scene(root));
+            newStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void handleDeleteButton() {
