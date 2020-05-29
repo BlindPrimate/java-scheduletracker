@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -16,6 +17,7 @@ import scheduler.models.Appointment;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.List;
 
 
 public class RootController {
@@ -25,10 +27,16 @@ public class RootController {
     @FXML private TableColumn<Appointment, String> colEndTime;
     @FXML private TableColumn<Appointment, String> colCustomer;
     @FXML private TableColumn<Appointment, String> colType;
+
+    @FXML private ToggleButton toggleAll;
+    @FXML private ToggleButton toggleWeek;
+    @FXML private ToggleButton toggleMonth;
+
+
     private ObservableList<Appointment>  appointments;
     private AppointmentAccessor accessor;
-
     private static RootController instance = null;
+    private static AppointmentAccessor apptAccessor = new AppointmentAccessor();
 
     // singleton
     public RootController() {
@@ -36,6 +44,27 @@ public class RootController {
 
     @FXML
     public void initialize() {
+
+
+        // set time span toggle buttons to allow one clicked at a time
+        List<ToggleButton> timeToggles = List.of(toggleAll, toggleMonth, toggleWeek);
+        timeToggles.forEach(toggle -> {
+            toggle.setOnAction(e -> {
+                timeToggles.forEach(otherToggle -> {
+                    otherToggle.setSelected(false);
+                });
+                toggle.setSelected(true);
+                if (toggleAll.isSelected()) {
+                    populateAll();
+                } else if (toggleWeek.isSelected()) {
+                    populateWeekly();
+                } else if (toggleMonth.isSelected()) {
+                    populateMonthly();
+                }
+
+            });
+        });
+
 
         DateTimeFormatter readableTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
@@ -49,17 +78,26 @@ public class RootController {
             return new SimpleObjectProperty<>(t);
         });
         colCustomer.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customerName"));
-        populateAppointments();
-        appointmentTable.setItems(appointments);
+
+        // set appointment display to all on open
+        toggleAll.fire();
+        // select first item
         appointmentTable.getSelectionModel().select(0);
+    }
 
+    public void populateAll() {
+        appointmentTable.setItems(apptAccessor.getAllAppointments());
+    }
 
+    public void populateWeekly() {
+        appointmentTable.setItems(apptAccessor.getWeeklyAppointments());
+    }
+
+    public void populateMonthly() {
+        appointmentTable.setItems(apptAccessor.getMonthlyAppointments());
     }
 
     public void populateAppointments() {
-        appointments = new AppointmentAccessor().getAllAppointments();
-        appointmentTable.setItems(appointments);
-//        System.out.println(appointments.toString());
     }
 
     // event handlers
@@ -80,11 +118,12 @@ public class RootController {
             e.printStackTrace();
         }
     }
-    
+
     public void handleModifyButton() {
         try {
             Stage newStage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/makeAppointment.fxml"));
+
             // load controller with selected appointment
             loader.setController(new ModifyAppointmentController(appointmentTable.getSelectionModel().getSelectedItem()));
             Parent root = loader.load();
@@ -106,7 +145,6 @@ public class RootController {
         accessor.deleteAppointment(appt.getId());
         appointments.remove(appointmentTable.getSelectionModel().getSelectedIndex());
     }
-
 
     public void handleExit() {
         Stage stage = (Stage)appointmentTable.getScene().getWindow();

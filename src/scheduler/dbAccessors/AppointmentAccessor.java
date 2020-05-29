@@ -5,15 +5,81 @@ import javafx.collections.ObservableList;
 import scheduler.models.Appointment;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 
 public class AppointmentAccessor {
 
-    private ObservableList<Appointment> appointments;
     private Connection conn = null;
 
     public AppointmentAccessor() {
         this.conn = DBConnection.getConnection();
-        this.appointments = FXCollections.observableArrayList();
+    }
+
+    private ObservableList<Appointment> createAppointments(ResultSet rs) {
+
+        ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+        // loop results and create observable array of appointments
+        try {
+
+            while(rs.next()) {
+                int userId = rs.getInt("userId");
+                String customer = rs.getString("customerName");
+                int customerId = rs.getInt("customerId");
+                Timestamp startTime = rs.getTimestamp("start");
+                String type = rs.getString("type");
+                Timestamp endTime = rs.getTimestamp("end");
+                String title = rs.getString("title");
+                String description = rs.getString("description");
+                int id = rs.getInt("appointmentId");
+
+                // format appointments
+                Appointment appointment = new Appointment(startTime, endTime, customerId, userId, type, title);
+                appointment.setCustomerName(customer);
+                appointment.setId(id);
+                appointment.setDescription(description);
+                appointments.add(appointment);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error creating appointment from retrieved data");
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+
+    public ObservableList<Appointment> getAppointmentsTimeSpan(LocalDateTime fromDate, LocalDateTime toDate) {
+
+        try {
+            PreparedStatement stm = conn.prepareStatement(
+                    "SELECT customer.customerId, customer.customerName, "
+                        + "user.userName, user.userId, "
+                        + "appointment.appointmentId, appointment.title, appointment.type,"
+                        + "appointment.start, appointment.end, appointment.description "
+                        + "FROM appointment "
+                        + "INNER JOIN customer "
+                        + "ON appointment.customerId = customer.customerId "
+                        + "inner join user "
+                        + "ON appointment.userId = user.userId "
+                        + "WHERE appointment.start BETWEEN ? AND ? "
+            );
+
+            stm.setTimestamp(1, Timestamp.valueOf(fromDate));
+            stm.setTimestamp(2, Timestamp.valueOf(toDate));
+
+            ResultSet res = stm.executeQuery();
+            return createAppointments(res);
+        } catch (SQLException e) {
+            System.out.println("Error retrieving appointment data");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public ObservableList<Appointment> getWeeklyAppointments() {
+        return getAppointmentsTimeSpan(LocalDateTime.now(), LocalDateTime.now().plusDays(7));
+    }
+
+    public ObservableList<Appointment> getMonthlyAppointments() {
+        return getAppointmentsTimeSpan(LocalDateTime.now(), LocalDateTime.now().plusMonths(1));
     }
 
     public ObservableList<Appointment> getAllAppointments() {
@@ -31,26 +97,7 @@ public class AppointmentAccessor {
                     + "inner join user "
                     + "on appointment.userId = user.userId");
 
-            // loop results and create observable array of appointments
-            while(res.next()) {
-                int userId = res.getInt("userId");
-                String customer = res.getString("customerName");
-                int customerId = res.getInt("customerId");
-                Timestamp startTime = res.getTimestamp("start");
-                String type = res.getString("type");
-                Timestamp endTime = res.getTimestamp("end");
-                String title = res.getString("title");
-                String description = res.getString("description");
-                int id = res.getInt("appointmentId");
-
-                // format appointments
-                Appointment appointment = new Appointment(startTime, endTime, customerId, userId, type, title);
-                appointment.setCustomerName(customer);
-                appointment.setId(id);
-                appointment.setDescription(description);
-                appointments.add(appointment);
-            }
-            return appointments;
+            return createAppointments(res);
         } catch (SQLException e) {
             System.out.println("Error retrieving customer appointment data");
             e.printStackTrace();
