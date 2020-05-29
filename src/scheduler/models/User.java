@@ -1,41 +1,13 @@
 package scheduler.models;
 
-import scheduler.dbAccessors.DBConnection;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class User {
 
     private String username;
     private int userID;
     private String password;
 
-    public User(int userID, String password) {
-        this.userID = userID;
-        this.password = password;
-    }
+    public User() {
 
-
-    public boolean isAuthorized() {
-        Connection conn = DBConnection.getConnection();
-        try {
-            PreparedStatement stmt = conn.prepareStatement("select user.id, user.password from user where user.id = ?");
-            stmt.setInt(1, userID);
-            ResultSet rs = stmt.executeQuery();
-            // compare password to DB
-            if (rs.next() && rs.getString("password").equals(password)) {
-                this.username = rs.getString("userName");
-                this.userID = rs.getInt("userId");
-                return true;
-            }
-        } catch (
-                SQLException e ) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
 

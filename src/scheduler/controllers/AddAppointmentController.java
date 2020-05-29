@@ -42,7 +42,6 @@ public class AddAppointmentController extends AppointmentController {
 
         // set dates
         choiceStartDate.setValue(LocalDate.now());
-        choiceEndDate.setValue(LocalDate.now());
 
 
 
@@ -92,13 +91,10 @@ public class AddAppointmentController extends AppointmentController {
 
 
         LocalDateTime appointmentStart = LocalDateTime.of(choiceStartDate.getValue(), choiceStartTime.getValue());
-        LocalDateTime appointmentEnd = LocalDateTime.of(choiceEndDate.getValue(), choiceEndTime.getValue());
 
         Timestamp sqlStartTime = Timestamp.valueOf(appointmentStart);
-        Timestamp sqlEndTime = Timestamp.valueOf(appointmentEnd);
 
         appointment.setStartTime(sqlStartTime);
-        appointment.setEndTime(sqlEndTime);
         appointment.setAppointmentType(comboType.getValue());
         appointment.setCreatedBy("bonkers");
         appointment.setCustomerId(choiceCustomer.getValue().getId());

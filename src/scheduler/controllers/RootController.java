@@ -97,9 +97,6 @@ public class RootController {
         appointmentTable.setItems(apptAccessor.getMonthlyAppointments());
     }
 
-    public void populateAppointments() {
-    }
-
     // event handlers
     public void handleAddButton() {
         try {
@@ -112,6 +109,7 @@ public class RootController {
             newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
             });
             newStage.initOwner(appointmentTable.getScene().getWindow());
+            newStage.setTitle("Add Appointment");
             newStage.setScene(new Scene(root));
             newStage.show();
         } catch (Exception e) {
@@ -131,6 +129,7 @@ public class RootController {
             // refresh table of appointments on return to main screen
             newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
             });
+            newStage.setTitle("Modify Appointment");
             newStage.initOwner(appointmentTable.getScene().getWindow());
             newStage.setScene(new Scene(root));
             newStage.show();

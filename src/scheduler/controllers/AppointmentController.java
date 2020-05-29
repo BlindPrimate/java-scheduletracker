@@ -29,8 +29,6 @@ public abstract class AppointmentController {
     @FXML
     ComboBox<LocalTime> choiceStartTime;
     @FXML
-    DatePicker choiceEndDate;
-    @FXML
     ComboBox<LocalTime> choiceEndTime;
 
 
