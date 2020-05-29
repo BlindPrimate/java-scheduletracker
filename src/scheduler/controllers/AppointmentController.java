@@ -39,7 +39,7 @@ public abstract class AppointmentController {
     protected Appointment appointment;
     protected ObservableList<LocalTime> appointmentStartTimes = FXCollections.observableArrayList();
     protected ObservableList<LocalTime> appointmentEndTimes = FXCollections.observableArrayList();
-    protected FilteredList<LocalTime> filteredEndTimes = new FilteredList<>(appointmentEndTimes);
+    protected FilteredList<LocalTime> filteredEndTimes = new FilteredList<>(appointmentEndTimes, s -> false);
     protected static final DateTimeFormatter parseTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
     protected Appointment currentAppointment = new Appointment();

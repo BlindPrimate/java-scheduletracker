@@ -25,7 +25,6 @@ public class SceneBuilder {
         this.xmlLocation = xmlLocation;
     }
 
-
     public void show() {
         // create and load dialog
         try {
@@ -38,6 +37,7 @@ public class SceneBuilder {
                 ((ModifyAppointmentController) controller).initData();
             }
 
+            // refresh table of appointments on return to main screen
             newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
                 RootController.getInstance().populateAppointments();
             });
