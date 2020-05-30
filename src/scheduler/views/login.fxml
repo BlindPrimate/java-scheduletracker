@@ -21,14 +21,14 @@
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label text="Username:" GridPane.halignment="RIGHT" />
+      <Label text="%usernameLabel" GridPane.halignment="RIGHT" />
       <TextField fx:id="fieldUser" GridPane.columnIndex="1" />
-      <Label text="Password:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+      <Label text="%passwordLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
       <PasswordField fx:id="fieldPassword" GridPane.columnIndex="1" GridPane.rowIndex="1" />
        <Label fx:id="alertText" text="" />
       <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
         <buttons>
-          <Button defaultButton="true" onAction="#handleLogin" mnemonicParsing="false" text="Login" />
+          <Button defaultButton="true" onAction="#handleLogin" mnemonicParsing="false" text="%login" />
         </buttons>
          <GridPane.margin>
             <Insets />

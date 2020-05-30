@@ -23,25 +23,26 @@
    <children>
       <TableView fx:id="appointmentTable" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
         <columns>
-            <TableColumn fx:id="colCustomer" prefWidth="100.0" text="Customer" />
-            <TableColumn fx:id="colStartTime" prefWidth="100.0" text="Starting Time" />
-            <TableColumn fx:id="colEndTime" prefWidth="100.0" text="Ending Time" />
-            <TableColumn fx:id="colType" prefWidth="100.0" text="Type" />
+            <TableColumn fx:id="colCustomer" prefWidth="100.0" text="%customer" />
+            <TableColumn fx:id="colDate" prefWidth="100.0" text="%date" />
+            <TableColumn fx:id="colStartTime" prefWidth="100.0" text="%startTime" />
+            <TableColumn fx:id="colEndTime" prefWidth="100.0" text="%endTime" />
+            <TableColumn fx:id="colType" prefWidth="100.0" text="%type" />
         </columns>
       </TableView>
       <ButtonBar prefWidth="200.0" GridPane.rowIndex="2">
         <buttons>
-          <Button mnemonicParsing="false" onAction="#handleAddButton" text="Add" />
-            <Button mnemonicParsing="false" onAction="#handleModifyButton" text="Modify " />
-            <Button mnemonicParsing="false" onAction="#handleDeleteButton" text="Delete" />
-            <Button mnemonicParsing="false" onAction="#handleExit" text="Exit" />
+          <Button mnemonicParsing="false" onAction="#handleAddButton" text="%add" />
+            <Button mnemonicParsing="false" onAction="#handleModifyButton" text="%modify" />
+            <Button mnemonicParsing="false" onAction="#handleDeleteButton" text="%delete" />
+            <Button mnemonicParsing="false" onAction="#handleExit" text="%exit" />
         </buttons>
       </ButtonBar>
       <HBox alignment="CENTER" spacing="5.0">
          <children>
-            <ToggleButton fx:id="toggleAll" mnemonicParsing="false" text="All" />
-            <ToggleButton fx:id="toggleWeek" mnemonicParsing="false" text="This Week" />
-            <ToggleButton fx:id="toggleMonth" mnemonicParsing="false" text="This Month" />
+            <ToggleButton fx:id="toggleAll" mnemonicParsing="false" text="%allTimes" />
+            <ToggleButton fx:id="toggleWeek" mnemonicParsing="false" text="%weeklyTimes" />
+            <ToggleButton fx:id="toggleMonth" mnemonicParsing="false" text="%monthlyTimes" />
          </children>
       </HBox>
    </children>

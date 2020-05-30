@@ -9,6 +9,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import scheduler.services.Authenticator;
+import scheduler.services.localization.UserLocalization;
+
+import java.util.ResourceBundle;
 
 
 public class LoginController {
@@ -20,9 +23,6 @@ public class LoginController {
     @FXML
     private Label alertText;
 
-    private void initialize() {
-    }
-
     private void invalid(String text) {
         alertText.setText(text);
     }
@@ -31,12 +31,12 @@ public class LoginController {
     private void handleLogin() {
         Authenticator auth = Authenticator.getInstance();
         boolean isUserValid = auth.isUserValid(fieldUser.getText());
-
+        ResourceBundle bundle = UserLocalization.getBundle();
         if (isUserValid) {
             boolean isAuthorized = auth.login(fieldUser.getText(), fieldPassword.getText());
             if (isAuthorized) {
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/root.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/root.fxml"), bundle);
                     Parent root = loader.load();
 
                     // refresh table of appointments on return to main screen
@@ -48,10 +48,10 @@ public class LoginController {
                     e.printStackTrace();
                 }
             } else {
-                invalid("Incorrect Password");
+                invalid(bundle.getString("alertPassword"));
             }
         } else {
-            invalid("Username not found");
+            invalid(bundle.getString("alertUser"));
         }
     }
 }

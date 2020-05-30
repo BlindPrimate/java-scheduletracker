@@ -27,40 +27,40 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label text="Title:" GridPane.halignment="RIGHT">
+      <Label text="%titleLabel" GridPane.halignment="RIGHT">
          <padding>
             <Insets right="5.0" />
          </padding></Label>
       <TextField fx:id="fieldTitle" GridPane.columnIndex="1" />
       <ComboBox fx:id="comboType" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Label text="Type:" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+      <Label text="%typeLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
          <padding>
             <Insets right="5.0" />
          </padding>
       </Label>
-      <Label text="Start Time:" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+      <Label text="%startTimeLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
          <padding>
             <Insets right="5.0" />
          </padding></Label>
-      <Label text="Customer:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+      <Label text="%customerLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
          <padding>
             <Insets right="5.0" />
          </padding></Label>
-      <Label text="End Time:" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
+      <Label text="%endTimeLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
          <padding>
             <Insets right="5.0" />
          </padding></Label>
       <DatePicker fx:id="choiceStartDate" GridPane.columnIndex="1" GridPane.rowIndex="3" />
       <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="6">
         <buttons>
-          <Button mnemonicParsing="false" onAction="#handleSave" text="Save" />
-            <Button mnemonicParsing="false" onAction="#handleExit" text="Close" />
+          <Button mnemonicParsing="false" onAction="#handleSave" text="%save" />
+            <Button mnemonicParsing="false" onAction="#handleExit" text="%cancel" />
         </buttons>
       </ButtonBar>
-      <ComboBox fx:id="choiceCustomer" prefWidth="150.0" promptText="Select One" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+      <ComboBox fx:id="choiceCustomer" prefWidth="150.0" promptText="%selectOne" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
        <ComboBox fx:id="choiceStartTime" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
       <ComboBox fx:id="choiceEndTime" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-      <Label text="Date:" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+      <Label text="%dateLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="3">L
          <padding>
             <Insets right="5.0" />
          </padding>

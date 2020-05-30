@@ -14,10 +14,12 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.models.Appointment;
+import scheduler.services.localization.UserLocalization;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.ResourceBundle;
 
 
 public class RootController {
@@ -27,6 +29,7 @@ public class RootController {
     @FXML private TableColumn<Appointment, String> colEndTime;
     @FXML private TableColumn<Appointment, String> colCustomer;
     @FXML private TableColumn<Appointment, String> colType;
+    @FXML private TableColumn<Appointment, String> colDate;
 
     @FXML private ToggleButton toggleAll;
     @FXML private ToggleButton toggleWeek;
@@ -35,16 +38,14 @@ public class RootController {
 
     private ObservableList<Appointment>  appointments;
     private AppointmentAccessor accessor;
-    private static RootController instance = null;
-    private static AppointmentAccessor apptAccessor = new AppointmentAccessor();
+    private RootController instance = null;
+    private AppointmentAccessor apptAccessor = new AppointmentAccessor();
 
-    // singleton
     public RootController() {
     }
 
     @FXML
     public void initialize() {
-
 
         // set time span toggle buttons to allow one clicked at a time
         List<ToggleButton> timeToggles = List.of(toggleAll, toggleMonth, toggleWeek);
@@ -77,6 +78,12 @@ public class RootController {
             String t = columnData.getValue().getEndTimeStamp().toLocalDateTime().format(readableTime);
             return new SimpleObjectProperty<>(t);
         });
+        colDate.setCellValueFactory(columnData -> {
+            String t = columnData.getValue()
+                    .getEndTimeStamp()
+                    .toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            return new SimpleObjectProperty<>(t);
+        });
         colCustomer.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customerName"));
 
         // set appointment display to all on open
@@ -101,7 +108,8 @@ public class RootController {
     public void handleAddButton() {
         try {
             Stage newStage = new Stage();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/makeAppointment.fxml"));
+            ResourceBundle bundle = UserLocalization.getBundle();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/makeAppointment.fxml"), bundle);
             loader.setController(new AddAppointmentController());
             Parent root = loader.load();
 
@@ -120,7 +128,8 @@ public class RootController {
     public void handleModifyButton() {
         try {
             Stage newStage = new Stage();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/makeAppointment.fxml"));
+            ResourceBundle bundle = UserLocalization.getBundle();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/makeAppointment.fxml"), bundle);
 
             // load controller with selected appointment
             loader.setController(new ModifyAppointmentController(appointmentTable.getSelectionModel().getSelectedItem()));
