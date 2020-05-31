@@ -26,7 +26,8 @@ public class CustomerAccessor {
                 int id = res.getInt("customerId");
                 String name = res.getString("customerName");
                 String address = res.getString("address");
-                customers.add(new Customer(id, name, address));
+                String phone = res.getString("phone");
+                customers.add(new Customer(id, name, address, phone));
             }
             return customers;
         } catch (SQLException e) {

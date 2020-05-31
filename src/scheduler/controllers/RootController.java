@@ -16,6 +16,7 @@ import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.models.Appointment;
 import scheduler.services.localization.UserLocalization;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -36,7 +37,7 @@ public class RootController {
     @FXML private ToggleButton toggleMonth;
 
 
-    private ObservableList<Appointment>  appointments;
+    private ObservableList<Appointment> appointments;
     private AppointmentAccessor accessor;
     private RootController instance = null;
     private AppointmentAccessor apptAccessor = new AppointmentAccessor();
@@ -69,7 +70,7 @@ public class RootController {
 
         DateTimeFormatter readableTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
-        colType.setCellValueFactory(new PropertyValueFactory<Appointment, String>("appointmentType"));
+        colType.setCellValueFactory(new PropertyValueFactory<>("appointmentType"));
         colStartTime.setCellValueFactory(columnData -> {
             String t = columnData.getValue().getStartTimeStamp().toLocalDateTime().format(readableTime);
             return new SimpleObjectProperty<>(t);
@@ -84,7 +85,7 @@ public class RootController {
                     .toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             return new SimpleObjectProperty<>(t);
         });
-        colCustomer.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customerName"));
+        colCustomer.setCellValueFactory(new PropertyValueFactory<>("customerName"));
 
         // set appointment display to all on open
         toggleAll.fire();
@@ -117,7 +118,7 @@ public class RootController {
             newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
             });
             newStage.initOwner(appointmentTable.getScene().getWindow());
-            newStage.setTitle("Add Appointment");
+            newStage.setTitle(bundle.getString("addAppointment"));
             newStage.setScene(new Scene(root));
             newStage.show();
         } catch (Exception e) {
@@ -138,7 +139,7 @@ public class RootController {
             // refresh table of appointments on return to main screen
             newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
             });
-            newStage.setTitle("Modify Appointment");
+            newStage.setTitle(bundle.getString("modifyAppointment"));
             newStage.initOwner(appointmentTable.getScene().getWindow());
             newStage.setScene(new Scene(root));
             newStage.show();
@@ -152,6 +153,42 @@ public class RootController {
         Appointment appt = appointmentTable.getSelectionModel().getSelectedItem();
         accessor.deleteAppointment(appt.getId());
         appointments.remove(appointmentTable.getSelectionModel().getSelectedIndex());
+    }
+
+    public void handleManageCustomers() {
+        try {
+            Stage newStage = new Stage();
+            ResourceBundle bundle = UserLocalization.getBundle();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/customers.fxml"), bundle);
+
+            Parent root = loader.load();
+
+            // refresh table of appointments on return to main screen
+            newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
+            });
+            newStage.setTitle(bundle.getString("manageCustomers"));
+            newStage.initOwner(appointmentTable.getScene().getWindow());
+            newStage.setScene(new Scene(root));
+            newStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void handleLogout() {
+        try {
+            Stage primaryStage = new Stage();
+            ResourceBundle bundle = UserLocalization.getBundle();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/login.fxml"), bundle);
+            Parent root = loader.load();
+            primaryStage.setTitle(bundle.getString("login"));
+            primaryStage.setScene(new Scene(root));
+            Stage stage = (Stage)appointmentTable.getScene().getWindow();
+            stage.close();
+            primaryStage.show();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void handleExit() {

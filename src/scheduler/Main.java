@@ -18,7 +18,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("views/login.fxml"), bundle);
         Parent root = loader.load();
         primaryStage.setTitle(bundle.getString("login"));
-        primaryStage.setScene(new Scene(root, 500, 475));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 
