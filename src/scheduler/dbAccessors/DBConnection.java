@@ -6,17 +6,12 @@ import java.sql.SQLException;
 public class DBConnection {
     private static Connection conn = null;
 
-    private DBConnection() {
+    public DBConnection() {
 
     }
 
     public static Connection getConnection() {
 
-        // return connection if already started
-        if (conn != null) {
-//            System.out.println(conn);
-            return conn;
-        }
 
         String serverName = "jdbc:mysql://3.227.166.251/U075i9";
         String dbUser = "U075i9";

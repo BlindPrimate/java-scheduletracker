@@ -4,10 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import scheduler.models.Customer;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class CustomerAccessor {
 
@@ -21,13 +18,16 @@ public class CustomerAccessor {
     public ObservableList<Customer> getAllCustomers() {
         try {
             Statement stm = conn.createStatement();
-            ResultSet res = stm.executeQuery("select customer.*, address.* FROM customer INNER JOIN address ON customer.customerId = address.addressId");
+            ResultSet res = stm.executeQuery("select customer.*, address.* FROM customer INNER JOIN address ON customer.addressId = address.addressId");
             while(res.next()) {
                 int id = res.getInt("customerId");
                 String name = res.getString("customerName");
                 String address = res.getString("address");
                 String phone = res.getString("phone");
-                customers.add(new Customer(id, name, address, phone));
+                Customer customer = new Customer(name, address, phone);
+                customer.setId(id);
+                customers.add(customer);
+
             }
             return customers;
         } catch (SQLException e) {
@@ -37,19 +37,80 @@ public class CustomerAccessor {
         return null;
     }
 
-    public ObservableList<String> getAllCustomerNames() {
-
+    public int addCustomer(Customer customer) {
         try {
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("select customerName from customer");
-            while(rs.next()) {
-                customerNames.add(rs.getString("customerName"));
+            PreparedStatement stm1 = conn.prepareStatement(
+                    "INSERT INTO address"+
+                            "(addressId, address, address2, cityId, postalCode, phone, createDate, createdBy, lastUpdate, lastUpdateBy) " +
+                            "VALUES(DEFAULT, ?,?,?,?,?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
+
+            // set to allow multiple insert statements to be sent
+            conn.setAutoCommit(false);
+            stm1.setString(1,customer.getAddress());  // address 1
+            stm1.setString(2, "");                // address 2
+            stm1.setInt(3, 3);                    // city id
+            stm1.setInt(4, 0);                    // post code
+            stm1.setString(5, customer.getPhone());  // phone
+            stm1.setString(6, "a user");           // created by
+            stm1.setString(7, "a user");            // last updated by
+            stm1.execute();
+            // get results form first insert (to get ID for address to add to customer as FK)
+            ResultSet keys = stm1.getGeneratedKeys();
+            if (keys.next()) {
+                PreparedStatement stm2 = conn.prepareStatement("INSERT INTO customer" +
+                        "(customerId, customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateBy) " +
+                        "VALUES" +
+                        "(DEFAULT, ?, ?, ?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP, ? )");
+                stm2.setString(1, customer.getName()); // name
+                stm2.setLong(2, keys.getLong(1) );  // address id
+                stm2.setInt(3, 1);   // active
+                stm2.setString(4, "a user");  // created by
+                stm2.setString(5, "a user");  // last updated by
+
+                stm2.execute();
+                conn.commit();
             }
-            return customerNames;
         } catch (SQLException e) {
-            System.out.println("Error retrieving customer names");
+            System.out.println("Error adding customer");
             e.printStackTrace();
         }
-        return null;
+        return 0;
     }
+
+    public int updateCustomer(Customer customer) {
+
+        try {
+            PreparedStatement stm = conn.prepareStatement(
+                    "UPDATE customer " +
+                    "INNER JOIN address " +
+                    "WHERE customer.addressId = address.addressId " +
+                    "SET name=?, address=?, phone=?"
+            );
+            stm.setString(1,customer.getName());
+            stm.setString(2,customer.getAddress());
+            stm.setString(3,customer.getPhone());
+            int n = stm.executeUpdate();
+            return n;
+        } catch (SQLException e) {
+            System.out.println("Error updating customer data");
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int deleteCustomer(Customer customer) {
+        try {
+            String sql = "DELETE FROM customer WHERE customerId = ?";
+            PreparedStatement stm = conn.prepareStatement(sql);
+            stm.setInt(1, customer.getId());
+            return stm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error deleting customer");
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
+
 }
