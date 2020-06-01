@@ -42,6 +42,7 @@
          <children>
             <TableView fx:id="appointmentTable" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3">
               <columns>
+                  <TableColumn fx:id="colTitle" prefWidth="100.0" text="%title" />
                   <TableColumn fx:id="colCustomer" prefWidth="100.0" text="%customer" />
                   <TableColumn fx:id="colDate" prefWidth="100.0" text="%date" />
                   <TableColumn fx:id="colStartTime" prefWidth="100.0" text="%startTime" />

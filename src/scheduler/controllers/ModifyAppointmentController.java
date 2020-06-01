@@ -1,12 +1,16 @@
 package scheduler.controllers;
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.ListCell;
 import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.dbAccessors.CustomerAccessor;
 import scheduler.models.Appointment;
+import scheduler.models.Customer;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.function.Predicate;
 
 public class ModifyAppointmentController extends AppointmentController {
 
@@ -19,85 +23,106 @@ public class ModifyAppointmentController extends AppointmentController {
     @FXML
     public void initialize() {
 
-        // fill observables for appointment time listings
-        appointmentStartTimes = AppointmentController.buildAppointmentTime();
-        appointmentEndTimes = AppointmentController.buildAppointmentTime();
 
         // load customer names in dropdown
         CustomerAccessor access = new CustomerAccessor();
         choiceCustomer.setItems(access.getAllCustomers());
 
+        // load times
+        appointmentStartTimes = AppointmentController.buildAppointmentTime();
+        appointmentEndTimes = AppointmentController.buildAppointmentTime();
 
+        // set times
         choiceStartTime.setItems(appointmentStartTimes);
-        choiceEndTime.setItems(filteredEndTimes);
+        choiceStartTime.setValue(LocalTime.of(8, 0)); // default start time
+        choiceEndTime.setItems(appointmentEndTimes);
+        choiceEndTime.setValue(LocalTime.of(8, 15));  // default end time
 
 
-        // filter predicate to remove times earlier than start time from end time list
-        Predicate<LocalTime> predicate = (endTime) -> {
-            // formatter to read time strings -- turn into LocalTime
-            LocalTime startTime = choiceStartTime.getValue();
-            LocalTime endTimeToFilter = LocalTime.parse(endTime.toString(), parseTime);
-            return endTimeToFilter.isAfter(startTime);
-        };
+        // set dates
+        choiceStartDate.setValue(appointment.getStartTimeStamp().toLocalDateTime().toLocalDate());
 
-        // filter list to remove times later than chosen start time
-        choiceStartTime.setOnAction((event) -> {
 
-            // keep end times where they are if chosen end time is after chosen start time at time of choice
-            int starTimeIndex = choiceStartTime.getSelectionModel().getSelectedIndex();
-            int endTimeIndex = choiceEndTime.getSelectionModel().getSelectedIndex();
-            int indexDiff = endTimeIndex - starTimeIndex;
+        // format times to display in 12hr am/pm format in combo boxes
+        choiceStartTime.setCellFactory(cv -> timeFactory());
+        choiceEndTime.setCellFactory(cv -> timeFactory());
+        choiceStartTime.setButtonCell(timeFactory());
+        choiceEndTime.setButtonCell(timeFactory());
 
-            // filter end times
-            filteredEndTimes.setPredicate(null);
-            filteredEndTimes.setPredicate(predicate);
+        fieldTitle.setText(appointment.getTitle());
+        System.out.println(appointment.getTitle());
+        comboType.setValue(appointment.getAppointmentType());
 
-            // smart end time setting after filter
-            if (indexDiff > 0) {
-                choiceEndTime.setValue(filteredEndTimes.get(indexDiff));
-            } else {
-                choiceEndTime.setValue(filteredEndTimes.get(0));
+        // format names of customers in combo box
+        choiceCustomer.setCellFactory(combo -> new ListCell<>() {
+            @Override
+            protected void updateItem(Customer customer, boolean empty) {
+                super.updateItem(customer, empty);
+                if (customer == null || empty) {
+                    setText(null);
+                } else {
+                    setText(customer.getName());
+                }
             }
         });
+        choiceCustomer.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(Customer customer, boolean empty) {
+                super.updateItem(customer, empty);
+                if (customer == null || empty) {
+                    setText(null);
+                } else {
+                    setText(customer.getName());
+                }
+            }
+        });
+
+
+        comboType.setItems(FXCollections.observableArrayList("Scrum", "Presentation", "Strategic", "Project Managment"));
+
+
+        // modify controller specific set values
+        comboType.setValue(appointment.getAppointmentType());
+        choiceStartTime.setValue(appointment.getStartTimeStamp().toLocalDateTime().toLocalTime());
+        choiceEndTime.setValue(appointment.getEndTimeStamp().toLocalDateTime().toLocalTime());
+        choiceStartDate.setValue(appointment.getStartTimeStamp().toLocalDateTime().toLocalDate());
+        choiceCustomer.setValue(appointment.getCustomer());
+
     }
 
 
     public void initData() {
 
+
         // fill start end times with appointment data
-//        choiceStartTime.setValue(appointment.getStartTimeStamp().toLocalDateTime().format(parseTime));
-//        choiceEndTime.setValue(appointment.getEndTimeStamp().toLocalDateTime().format(parseTime));
+        choiceStartTime.setValue(appointment.getStartTimeStamp().toLocalDateTime().toLocalTime());
+        choiceEndTime.setValue(appointment.getEndTimeStamp().toLocalDateTime().toLocalTime());
 
         fieldTitle.setText(appointment.getTitle());
     }
 
-    public void handleSave() {
+    public void handleSave() {  // modify
 
         AppointmentAccessor accessor = new AppointmentAccessor();
 
         // set appointment attributes
-        currentAppointment.setTitle(fieldTitle.getText().trim());
+        appointment.setTitle(fieldTitle.getText().trim());
+        appointment.setAppointmentType(comboType.getValue());
+        appointment.setCustomerId(choiceCustomer.getSelectionModel().getSelectedItem().getId());
 
-        LocalTime startTime = choiceStartTime.getValue();
-//        LocalDateTime appointmentStart = choiceStartDate.getValue(), startTime);
+        LocalDateTime appointmentStart = LocalDateTime.of(choiceStartDate.getValue(), choiceStartTime.getValue());
+        LocalDateTime appointmentEnd = LocalDateTime.of(choiceStartDate.getValue(), choiceEndTime.getValue());
 
-//        Timestamp sqlStartTime = Timestamp.valueOf(appointmentStart);
-
-//        appointment.setStartTime(sqlStartTime);
-//        appointment.setEndTime(sqlStartTime);
-        appointment.setAppointmentType("scrum");
-        appointment.setCreatedBy("bonkers");
-        appointment.setCustomerId(1);
-        appointment.setCreatedById(1);
-
+        Timestamp sqlStartTime = Timestamp.valueOf(appointmentStart);
+        Timestamp sqlEndTime = Timestamp.valueOf(appointmentEnd);
+        appointment.setStartTime(sqlStartTime);
+        appointment.setEndTime(sqlEndTime);
         accessor.modifyAppointment(appointment);
 
-    }
+        // close window
+        handleExit();
 
-//    public boolean isValidForm() {
-//
-//
-//    }
+    }
 
 
 }

@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
 public class RootController {
 
     @FXML private TableView<Appointment> appointmentTable;
+    @FXML private TableColumn<Appointment, String> colTitle;
     @FXML private TableColumn<Appointment, String> colStartTime;
     @FXML private TableColumn<Appointment, String> colEndTime;
     @FXML private TableColumn<Appointment, String> colCustomer;
@@ -47,6 +48,9 @@ public class RootController {
 
     @FXML
     public void initialize() {
+
+        appointments = apptAccessor.getAllAppointments();
+        appointmentTable.setItems(appointments);
 
         // set time span toggle buttons to allow one clicked at a time
         List<ToggleButton> timeToggles = List.of(toggleAll, toggleMonth, toggleWeek);
@@ -70,6 +74,8 @@ public class RootController {
 
         DateTimeFormatter readableTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
+        // set column cell values
+        colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colType.setCellValueFactory(new PropertyValueFactory<>("appointmentType"));
         colStartTime.setCellValueFactory(columnData -> {
             String t = columnData.getValue().getStartTimeStamp().toLocalDateTime().format(readableTime);
@@ -94,15 +100,18 @@ public class RootController {
     }
 
     public void populateAll() {
-        appointmentTable.setItems(apptAccessor.getAllAppointments());
+        appointments = apptAccessor.getAllAppointments();
+        appointmentTable.setItems(appointments);
     }
 
     public void populateWeekly() {
-        appointmentTable.setItems(apptAccessor.getWeeklyAppointments());
+        appointments = apptAccessor.getWeeklyAppointments();
+        appointmentTable.setItems(appointments);
     }
 
     public void populateMonthly() {
-        appointmentTable.setItems(apptAccessor.getMonthlyAppointments());
+        appointments = apptAccessor.getMonthlyAppointments();
+        appointmentTable.setItems(appointments);
     }
 
     // event handlers
@@ -116,6 +125,7 @@ public class RootController {
 
             // refresh table of appointments on return to main screen
             newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
+                populateAll();
             });
             newStage.initOwner(appointmentTable.getScene().getWindow());
             newStage.setTitle(bundle.getString("addAppointment"));
@@ -138,6 +148,7 @@ public class RootController {
 
             // refresh table of appointments on return to main screen
             newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
+                populateAll();
             });
             newStage.setTitle(bundle.getString("modifyAppointment"));
             newStage.initOwner(appointmentTable.getScene().getWindow());
@@ -163,9 +174,6 @@ public class RootController {
 
             Parent root = loader.load();
 
-            // refresh table of appointments on return to main screen
-            newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
-            });
             newStage.setTitle(bundle.getString("manageCustomers"));
             newStage.initOwner(appointmentTable.getScene().getWindow());
             newStage.setScene(new Scene(root));

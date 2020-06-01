@@ -87,18 +87,19 @@ public class AddAppointmentController extends AppointmentController {
         Appointment appointment = new Appointment();
 
         // set appointment attributes
-        currentAppointment.setTitle(fieldTitle.getText().trim());
+        appointment.setTitle(fieldTitle.getText().trim());
 
 
         LocalDateTime appointmentStart = LocalDateTime.of(choiceStartDate.getValue(), choiceStartTime.getValue());
+        LocalDateTime appointmentEnd = LocalDateTime.of(choiceStartDate.getValue(), choiceEndTime.getValue());
 
         Timestamp sqlStartTime = Timestamp.valueOf(appointmentStart);
+        Timestamp sqlEndTime = Timestamp.valueOf(appointmentEnd);
 
         appointment.setStartTime(sqlStartTime);
+        appointment.setEndTime(sqlEndTime);
         appointment.setAppointmentType(comboType.getValue());
-        appointment.setCreatedBy("bonkers");
         appointment.setCustomerId(choiceCustomer.getValue().getId());
-        appointment.setCreatedById(1);
 
         accessor.addAppointment(appointment);
 

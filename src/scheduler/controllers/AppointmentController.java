@@ -4,7 +4,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import scheduler.models.Appointment;
@@ -39,7 +42,6 @@ public abstract class AppointmentController {
     protected FilteredList<LocalTime> filteredEndTimes = new FilteredList<>(appointmentEndTimes, s -> false);
     protected static final DateTimeFormatter parseTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
-    protected Appointment currentAppointment = new Appointment();
 
 
 
@@ -61,6 +63,9 @@ public abstract class AppointmentController {
     public AppointmentController() {
     }
 
+    protected void setStage() {
+
+    }
 
     public static ObservableList<LocalTime> buildAppointmentTime() {
         ObservableList<LocalTime> appointmentTimes = FXCollections.observableArrayList();

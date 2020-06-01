@@ -17,19 +17,21 @@ public class Appointment {
     private String location;
     private String contact;
     private URL url;
+    private Customer customer;
 
 
     public Appointment() {
 
     }
 
-    public Appointment(Timestamp startTime, Timestamp endTime, int customerId, int createdById, String appointmentType, String title) {
+    public Appointment(Timestamp startTime, Timestamp endTime, int customerId, int createdById, String appointmentType, String title, Customer customer) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.customerId = customerId;
         this.createdById = createdById;
         this.appointmentType = appointmentType;
         this.title = title;
+        this.customer = customer;
     }
 
     // getters and setters
@@ -47,10 +49,6 @@ public class Appointment {
 
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
-    }
-
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
     }
 
     public int getCreatedById() {
@@ -90,7 +88,7 @@ public class Appointment {
         return customerId;
     }
 
-    public void setCustomer(int customer) {
+    public void setCustomerId(int customer) {
         this.customerId = customer;
     }
 
@@ -148,6 +146,14 @@ public class Appointment {
 
     public void setUrl(URL url) {
         this.url = url;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }
 
