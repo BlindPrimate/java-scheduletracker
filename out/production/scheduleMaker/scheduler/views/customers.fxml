@@ -30,9 +30,9 @@
       <VBox minHeight="200.0" prefHeight="300.0" spacing="10.0" GridPane.columnIndex="2">
          <children>
             <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleAddCustomer" prefHeight="25.0" prefWidth="140.0" text="%add" />
-             <Button mnemonicParsing="false" onAction="#handleModifyCustomer" prefHeight="25.0" prefWidth="193.0" text="%modify" />
-            <Button mnemonicParsing="false" onAction="#handleDeleteCustomer" prefHeight="25.0" prefWidth="206.0" text="%delete" />
-            <Button cancelButton="true" mnemonicParsing="false" onAction="#handleCancel" prefHeight="25.0" prefWidth="274.0" text="%cancel" />
+             <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleModifyCustomer" prefHeight="25.0" prefWidth="193.0" text="%modify" />
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleDeleteCustomer" prefHeight="25.0" prefWidth="206.0" text="%delete" />
+            <Button alignment="CENTER" cancelButton="true" mnemonicParsing="false" onAction="#handleCancel" prefHeight="25.0" prefWidth="274.0" text="%cancel" />
          </children>
       </VBox>
    </children>

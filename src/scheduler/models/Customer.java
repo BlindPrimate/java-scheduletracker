@@ -6,6 +6,7 @@ public class Customer {
     private String name;
     private String address;
     private String phone;
+    private int addressId;
 
 
     public Customer(String name, String address, String phone) {
@@ -45,5 +46,13 @@ public class Customer {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public int getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(int addressId) {
+        this.addressId = addressId;
     }
 }

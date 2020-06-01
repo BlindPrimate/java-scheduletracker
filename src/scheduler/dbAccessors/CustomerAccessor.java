@@ -26,6 +26,7 @@ public class CustomerAccessor {
                 String phone = res.getString("phone");
                 Customer customer = new Customer(name, address, phone);
                 customer.setId(id);
+                customer.setAddressId(res.getInt("addressId"));
                 customers.add(customer);
 
             }
@@ -80,17 +81,25 @@ public class CustomerAccessor {
     public int updateCustomer(Customer customer) {
 
         try {
-            PreparedStatement stm = conn.prepareStatement(
-                    "UPDATE customer " +
-                    "INNER JOIN address " +
-                    "WHERE customer.addressId = address.addressId " +
-                    "SET name=?, address=?, phone=?"
-            );
-            stm.setString(1,customer.getName());
-            stm.setString(2,customer.getAddress());
-            stm.setString(3,customer.getPhone());
-            int n = stm.executeUpdate();
-            return n;
+            conn.setAutoCommit(false);
+            String sqlCustomer = "UPDATE customer " +
+                            "SET customerName=? " +
+                            "WHERE customerId=?";
+            PreparedStatement stm1 = conn.prepareStatement(sqlCustomer);
+            stm1.setString(1, customer.getName());
+            stm1.setInt(2, customer.getId());
+            stm1.executeUpdate();
+
+            String sqlAddress = "UPDATE address " +
+                            "SET address=?, phone=? " +
+                            "WHERE addressId=?";
+            PreparedStatement stm2 = conn.prepareStatement(sqlAddress);
+            stm2.setString(1,customer.getAddress());
+            stm2.setString(2,customer.getPhone());
+            stm2.setInt(3, customer.getAddressId());
+            stm2.executeUpdate();
+            conn.commit();
+            return 1;
         } catch (SQLException e) {
             System.out.println("Error updating customer data");
             e.printStackTrace();

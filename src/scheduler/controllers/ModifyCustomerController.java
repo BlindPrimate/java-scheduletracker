@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 import scheduler.dbAccessors.CustomerAccessor;
 import scheduler.models.Customer;
 
-public class AddCustomerController {
+public class ModifyCustomerController {
     @FXML
     private GridPane mainPane;
     @FXML
@@ -16,23 +16,29 @@ public class AddCustomerController {
     private TextField fieldAddress;
     @FXML
     private TextField fieldPhone;
+    Customer customer;
 
+    public ModifyCustomerController(Customer customer) {
+        this.customer = customer;
+    }
 
     @FXML
     public void initialize() {
-
+        fieldName.setText(customer.getName());
+        fieldAddress.setText(customer.getAddress());
+        fieldPhone.setText(customer.getPhone());
     }
 
     @FXML
     public void handleSave() {
         CustomerAccessor accessor = new CustomerAccessor();
-        String name = fieldName.getText();
-        String address = fieldAddress.getText();
-        String phone = fieldPhone.getText();
-        accessor.addCustomer(new Customer(name, address, phone));
-        // close window
+        customer.setName(fieldName.getText());
+        customer.setAddress(fieldAddress.getText());
+        customer.setPhone(fieldPhone.getText());
+        accessor.updateCustomer(customer);
         handleCancel();
     }
+
 
 
     @FXML
