@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
@@ -40,7 +41,6 @@ public class RootController {
 
     private ObservableList<Appointment> appointments;
     private AppointmentAccessor accessor;
-    private RootController instance = null;
     private AppointmentAccessor apptAccessor = new AppointmentAccessor();
 
     public RootController() {
@@ -97,6 +97,18 @@ public class RootController {
         toggleAll.fire();
         // select first item
         appointmentTable.getSelectionModel().select(0);
+
+
+        // check for upcoming appointments (next 15 min)
+        AppointmentAccessor accessor = new AppointmentAccessor();
+        Appointment upcoming = accessor.checkUpcomingAppointments();
+        if (upcoming != null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("You have an upcoming appointment with " +
+                    upcoming.getCustomerName() +
+                    " at " + upcoming.getStartTimeStamp().toLocalDateTime().format(DateTimeFormatter.ofPattern("hh:mm a")) );
+            alert.showAndWait();
+        }
     }
 
     public void populateAll() {

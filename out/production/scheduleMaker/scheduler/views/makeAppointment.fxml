@@ -32,7 +32,7 @@
             <Insets right="5.0" />
          </padding></Label>
       <TextField fx:id="fieldTitle" GridPane.columnIndex="1" />
-      <ComboBox fx:id="comboType" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <ComboBox fx:id="comboType" promptText="%selectOne" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <Label text="%typeLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
          <padding>
             <Insets right="5.0" />

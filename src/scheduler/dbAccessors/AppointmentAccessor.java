@@ -169,4 +169,28 @@ public class AppointmentAccessor {
         }
 
     }
+
+    public Appointment checkUpcomingAppointments() {
+
+        try {
+            String sql = "select * from appointment INNER JOIN customer ON appointment.customerId = customer.customerId " +
+                    "WHERE userId=? AND start BETWEEN ? and ADDDATE(?, interval 15 minute)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, Authenticator.getInstance().getUserId());
+            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+            ResultSet rs =  stmt.executeQuery();
+            Appointment upcoming = new Appointment();
+            if (rs.next()) {
+                upcoming.setCustomerName(rs.getString("customerName"));
+                upcoming.setStartTime(rs.getTimestamp("start"));
+                return upcoming;
+            } else {
+                return null;
+            }
+        } catch(SQLException e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
