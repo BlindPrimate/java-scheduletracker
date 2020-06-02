@@ -43,8 +43,6 @@ public abstract class AppointmentController {
     protected static final DateTimeFormatter parseTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
 
-
-
     protected ListCell<LocalTime> timeFactory() {
         return new ListCell<LocalTime>() {
             @Override
@@ -60,13 +58,6 @@ public abstract class AppointmentController {
     };
 
 
-    public AppointmentController() {
-    }
-
-    protected void setStage() {
-
-    }
-
     public static ObservableList<LocalTime> buildAppointmentTime() {
         ObservableList<LocalTime> appointmentTimes = FXCollections.observableArrayList();
 
@@ -80,7 +71,6 @@ public abstract class AppointmentController {
         }
         return appointmentTimes;
     }
-
 
     public void handleExit() {
         Stage stage = (Stage)mainPane.getScene().getWindow();

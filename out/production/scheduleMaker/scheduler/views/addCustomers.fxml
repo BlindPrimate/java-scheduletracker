@@ -28,23 +28,23 @@
             <Insets right="5.0" />
          </padding></Label>
       <TextField fx:id="fieldName" GridPane.columnIndex="1" />
-      <Label text="%phoneLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+      <Label text="%phoneLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
          <padding>
             <Insets right="5.0" />
          </padding>
       </Label>
-      <TextField fx:id="fieldPhone" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Label text="%addressLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+      <TextField fx:id="fieldPhone" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Label text="%addressLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
          <padding>
             <Insets right="5.0" />
          </padding>
       </Label>
-      <TextField fx:id="fieldAddress" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <TextField fx:id="fieldAddress" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <Label text="" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
       <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="4">
         <buttons>
-          <Button onAction="#handleSave" defaultButton="true" mnemonicParsing="false" text="%save" />
-          <Button onAction="#handleCancel" mnemonicParsing="false" text="%cancel" />
+          <Button defaultButton="true" mnemonicParsing="false" onAction="#handleSave" text="%save" />
+          <Button mnemonicParsing="false" onAction="#handleCancel" text="%cancel" />
         </buttons>
       </ButtonBar>
    </children>

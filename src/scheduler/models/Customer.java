@@ -15,6 +15,17 @@ public class Customer {
         this.phone = phone;
     }
 
+
+    // set equality to equal by ID
+    @Override
+    public boolean equals(Object obj) {
+        Customer test = (Customer)obj;
+        if (obj == null) return false;
+        if (this.id == test.getId()) return true;
+        return super.equals(obj);
+    }
+
+
     // getters and setters
     public String getName() {
         return name;

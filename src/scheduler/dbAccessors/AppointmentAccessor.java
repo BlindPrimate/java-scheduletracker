@@ -34,6 +34,7 @@ public class AppointmentAccessor {
                 String description = rs.getString("description");
                 int id = rs.getInt("appointmentId");
                 Customer customer = new Customer(customerName, "", "");
+                customer.setId(customerId);
 
                 // format appointments
                 Appointment appointment = new Appointment(startTime, endTime, customerId, userId, type, title, customer);

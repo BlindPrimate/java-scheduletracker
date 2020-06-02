@@ -143,7 +143,8 @@ public class RootController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/makeAppointment.fxml"), bundle);
 
             // load controller with selected appointment
-            loader.setController(new ModifyAppointmentController(appointmentTable.getSelectionModel().getSelectedItem()));
+            ModifyAppointmentController controller = new ModifyAppointmentController(appointmentTable.getSelectionModel().getSelectedItem());
+            loader.setController(controller);
             Parent root = loader.load();
 
             // refresh table of appointments on return to main screen

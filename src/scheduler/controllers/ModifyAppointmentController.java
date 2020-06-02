@@ -23,7 +23,6 @@ public class ModifyAppointmentController extends AppointmentController {
     @FXML
     public void initialize() {
 
-
         // load customer names in dropdown
         CustomerAccessor access = new CustomerAccessor();
         choiceCustomer.setItems(access.getAllCustomers());
@@ -50,7 +49,6 @@ public class ModifyAppointmentController extends AppointmentController {
         choiceEndTime.setButtonCell(timeFactory());
 
         fieldTitle.setText(appointment.getTitle());
-        System.out.println(appointment.getTitle());
         comboType.setValue(appointment.getAppointmentType());
 
         // format names of customers in combo box
@@ -78,6 +76,7 @@ public class ModifyAppointmentController extends AppointmentController {
         });
 
 
+        choiceCustomer.setValue(appointment.getCustomer());
         comboType.setItems(FXCollections.observableArrayList("Scrum", "Presentation", "Strategic", "Project Managment"));
 
 
@@ -86,19 +85,7 @@ public class ModifyAppointmentController extends AppointmentController {
         choiceStartTime.setValue(appointment.getStartTimeStamp().toLocalDateTime().toLocalTime());
         choiceEndTime.setValue(appointment.getEndTimeStamp().toLocalDateTime().toLocalTime());
         choiceStartDate.setValue(appointment.getStartTimeStamp().toLocalDateTime().toLocalDate());
-        choiceCustomer.setValue(appointment.getCustomer());
 
-    }
-
-
-    public void initData() {
-
-
-        // fill start end times with appointment data
-        choiceStartTime.setValue(appointment.getStartTimeStamp().toLocalDateTime().toLocalTime());
-        choiceEndTime.setValue(appointment.getEndTimeStamp().toLocalDateTime().toLocalTime());
-
-        fieldTitle.setText(appointment.getTitle());
     }
 
     public void handleSave() {  // modify

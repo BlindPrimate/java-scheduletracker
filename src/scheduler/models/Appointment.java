@@ -34,6 +34,8 @@ public class Appointment {
         this.customer = customer;
     }
 
+
+
     // getters and setters
     public int getId() {
         return id;
