@@ -5,9 +5,11 @@ import javafx.collections.ObservableList;
 import scheduler.models.Appointment;
 import scheduler.models.Customer;
 import scheduler.services.Authenticator;
+import scheduler.services.localization.TimeUtil;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 public class AppointmentAccessor {
 
@@ -19,6 +21,7 @@ public class AppointmentAccessor {
 
     private ObservableList<Appointment> createAppointments(ResultSet rs) {
 
+
         ObservableList<Appointment> appointments = FXCollections.observableArrayList();
         // loop results and create observable array of appointments
         try {
@@ -27,9 +30,9 @@ public class AppointmentAccessor {
                 int userId = rs.getInt("userId");
                 String customerName = rs.getString("customerName");
                 int customerId = rs.getInt("customerId");
-                Timestamp startTime = rs.getTimestamp("start");
+                LocalDateTime startTime = TimeUtil.toUserTime(rs.getTimestamp("start").toLocalDateTime());
                 String type = rs.getString("type");
-                Timestamp endTime = rs.getTimestamp("end");
+                LocalDateTime endTime = TimeUtil.toUserTime(rs.getTimestamp("end").toLocalDateTime());
                 String title = rs.getString("title");
                 String description = rs.getString("description");
                 int id = rs.getInt("appointmentId");
@@ -112,6 +115,9 @@ public class AppointmentAccessor {
 
     public boolean addAppointment(Appointment appointment) {
         Authenticator auth = Authenticator.getInstance();
+
+        LocalDateTime start = TimeUtil.toUTC(appointment.getStartTime());
+        LocalDateTime end = TimeUtil.toUTC(appointment.getEndTime());
         try {
             PreparedStatement stm = conn.prepareStatement(
                     "INSERT INTO `appointment` VALUES "
@@ -125,8 +131,8 @@ public class AppointmentAccessor {
             stm.setString(6, ""); // contact
             stm.setString(7, appointment.getAppointmentType()); // type
             stm.setString(8, ""); // url
-            stm.setTimestamp(9, appointment.getStartTimeStamp() ); // start time
-            stm.setTimestamp(10, appointment.getEndTimeStamp() ); // end time
+            stm.setTimestamp(9, Timestamp.valueOf(start));
+            stm.setTimestamp(10, Timestamp.valueOf(end));
             stm.setString(11, auth.getUsername()); //  user
             stm.setString(12, auth.getUsername()); //  last updated by - user
             stm.executeUpdate();
@@ -151,6 +157,8 @@ public class AppointmentAccessor {
 
     public void modifyAppointment(Appointment appointment) {
         Authenticator auth = Authenticator.getInstance();
+        LocalDateTime start = TimeUtil.toUTC(appointment.getStartTime());
+        LocalDateTime end = TimeUtil.toUTC(appointment.getStartTime());
         String sql = "UPDATE appointment " +
                 "SET customerId=?, type=?, start=?, end=? lastUpdate=CURRENT_DATE, lastUpdateBy=? " +
                 "WHERE appointmentId=?";
@@ -159,8 +167,8 @@ public class AppointmentAccessor {
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, appointment.getCustomerId());  // customer id
             stmt.setString(2, appointment.getAppointmentType());  // appointment type
-            stmt.setTimestamp(3, appointment.getStartTimeStamp());  // start time
-            stmt.setTimestamp(4, appointment.getEndTimeStamp());  // end time
+            stmt.setTimestamp(3, Timestamp.valueOf(start));  // start time
+            stmt.setTimestamp(4, Timestamp.valueOf(end));  // start time
             stmt.setString(5, auth.getUsername());  // last update by
             stmt.setInt(6, appointment.getId());
 
@@ -171,19 +179,18 @@ public class AppointmentAccessor {
     }
 
     public Appointment checkUpcomingAppointments() {
-
         try {
             String sql = "select * from appointment INNER JOIN customer ON appointment.customerId = customer.customerId " +
                     "WHERE userId=? AND start BETWEEN ? and ADDDATE(?, interval 15 minute)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, Authenticator.getInstance().getUserId());
-            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
-            stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now(ZoneOffset.UTC)));
+            stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now(ZoneOffset.UTC)));
             ResultSet rs =  stmt.executeQuery();
             Appointment upcoming = new Appointment();
             if (rs.next()) {
                 upcoming.setCustomerName(rs.getString("customerName"));
-                upcoming.setStartTime(rs.getTimestamp("start"));
+                upcoming.setStartTime(rs.getTimestamp("start").toLocalDateTime());
                 return upcoming;
             } else {
                 return null;
@@ -192,5 +199,30 @@ public class AppointmentAccessor {
             e.printStackTrace();
         }
         return null;
+    }
+    public boolean hasAppointmentOverlap(Appointment appointment) {
+        Timestamp start = Timestamp.valueOf(TimeUtil.toUTC(appointment.getStartTime()));
+        Timestamp end = Timestamp.valueOf(TimeUtil.toUTC(appointment.getEndTime()));
+        String sql = "SELECT * FROM appointment " +
+                "WHERE ((? NOT BETWEEN start AND end) AND (? NOT BETWEEN start AND end)) " +
+                "AND " +
+                "((start NOT BETWEEN ? AND ?) AND (end NOT BETWEEN ? AND ?)) ";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setTimestamp(1, start);
+            stmt.setTimestamp(2, end);
+            stmt.setTimestamp(3, start);
+            stmt.setTimestamp(4, end);
+            stmt.setTimestamp(5, start);
+            stmt.setTimestamp(6, end);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+
     }
 }

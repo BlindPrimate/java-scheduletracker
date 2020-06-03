@@ -8,7 +8,6 @@ import scheduler.dbAccessors.CustomerAccessor;
 import scheduler.models.Appointment;
 import scheduler.models.Customer;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -100,10 +99,8 @@ public class ModifyAppointmentController extends AppointmentController {
         LocalDateTime appointmentStart = LocalDateTime.of(choiceStartDate.getValue(), choiceStartTime.getValue());
         LocalDateTime appointmentEnd = LocalDateTime.of(choiceStartDate.getValue(), choiceEndTime.getValue());
 
-        Timestamp sqlStartTime = Timestamp.valueOf(appointmentStart);
-        Timestamp sqlEndTime = Timestamp.valueOf(appointmentEnd);
-        appointment.setStartTime(sqlStartTime);
-        appointment.setEndTime(sqlEndTime);
+        appointment.setStartTime(appointmentStart);
+        appointment.setEndTime(appointmentEnd);
         accessor.modifyAppointment(appointment);
 
         // close window

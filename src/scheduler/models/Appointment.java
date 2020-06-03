@@ -2,11 +2,12 @@ package scheduler.models;
 
 import java.net.URL;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Appointment {
     private int id;
-    private Timestamp startTime;
-    private Timestamp endTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String customerName;
     private int customerId;
     private int createdById;
@@ -24,7 +25,7 @@ public class Appointment {
 
     }
 
-    public Appointment(Timestamp startTime, Timestamp endTime, int customerId, int createdById, String appointmentType, String title, Customer customer) {
+    public Appointment(LocalDateTime startTime, LocalDateTime endTime, int customerId, int createdById, String appointmentType, String title, Customer customer) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.customerId = customerId;
@@ -60,29 +61,29 @@ public class Appointment {
     public void setCreatedById(int createdById) {
         this.createdById = createdById;
     }
-    public String getStartTime() {
-        return startTime.toString();
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setStartTime(Timestamp startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
     public Timestamp getStartTimeStamp() {
-        return (Timestamp)startTime;
+        return Timestamp.valueOf(startTime);
     }
 
 
-    public String getEndTime() {
-        return endTime.toString();
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     public Timestamp getEndTimeStamp() {
-        return (Timestamp)endTime;
+        return Timestamp.valueOf(endTime);
     }
 
 
-    public void setEndTime(Timestamp endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 

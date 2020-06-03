@@ -9,7 +9,6 @@ import scheduler.dbAccessors.CustomerAccessor;
 import scheduler.models.Appointment;
 import scheduler.models.Customer;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -93,19 +92,21 @@ public class AddAppointmentController extends AppointmentController {
         LocalDateTime appointmentStart = LocalDateTime.of(choiceStartDate.getValue(), choiceStartTime.getValue());
         LocalDateTime appointmentEnd = LocalDateTime.of(choiceStartDate.getValue(), choiceEndTime.getValue());
 
-        Timestamp sqlStartTime = Timestamp.valueOf(appointmentStart);
-        Timestamp sqlEndTime = Timestamp.valueOf(appointmentEnd);
-
-        appointment.setStartTime(sqlStartTime);
-        appointment.setEndTime(sqlEndTime);
+        appointment.setStartTime(appointmentStart);
+        appointment.setEndTime(appointmentEnd);
         appointment.setAppointmentType(comboType.getValue());
         appointment.setCustomerId(choiceCustomer.getValue().getId());
 
-        accessor.addAppointment(appointment);
+        boolean hasOverlap = accessor.hasAppointmentOverlap(appointment);
+//        if (!hasOverlap) {
+            accessor.addAppointment(appointment);
+            // close window
+            handleExit();
+//        } else {
+//            System.out.println("overlap");
+//        }
 
 
-        // close window
-        handleExit();
 
     }
 
