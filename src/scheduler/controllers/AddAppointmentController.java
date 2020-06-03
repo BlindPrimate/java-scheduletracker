@@ -84,6 +84,7 @@ public class AddAppointmentController extends AppointmentController {
 
     public void handleSave() {
 
+        ResourceBundle bundle = UserLocalization.getBundle();
         AppointmentAccessor accessor = new AppointmentAccessor();
         Appointment appointment = new Appointment();
 
@@ -96,10 +97,23 @@ public class AddAppointmentController extends AppointmentController {
 
         appointment.setStartTime(appointmentStart);
         appointment.setEndTime(appointmentEnd);
-        appointment.setAppointmentType(comboType.getValue());
-        appointment.setCustomerId(choiceCustomer.getValue().getId());
 
-        ResourceBundle bundle = UserLocalization.getBundle();
+        // appointment type validation
+        if (comboType.getValue() != null) {
+            appointment.setAppointmentType(comboType.getValue());
+        } else {
+            alertText.setText(bundle.getString("alertChooseType"));
+            return;
+        }
+
+        // customer validation
+        if (choiceCustomer.getValue() != null) {
+            appointment.setCustomerId(choiceCustomer.getValue().getId());
+        } else {
+            alertText.setText(bundle.getString("alertChooseCustomer"));
+            return;
+        }
+
 
         // check for overlap
         boolean hasOverlap = accessor.hasAppointmentOverlap(appointment);

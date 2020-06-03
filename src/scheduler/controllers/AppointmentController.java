@@ -4,10 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import scheduler.models.Appointment;
@@ -34,7 +31,7 @@ public abstract class AppointmentController {
     @FXML
     ComboBox<LocalTime> choiceEndTime;
     @FXML
-    TextField alertText;
+    Label alertText;
 
 
 

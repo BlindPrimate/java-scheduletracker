@@ -25,7 +25,6 @@ public class AppointmentAccessor {
         ObservableList<Appointment> appointments = FXCollections.observableArrayList();
         // loop results and create observable array of appointments
         try {
-
             while(rs.next()) {
                 int userId = rs.getInt("userId");
                 String customerName = rs.getString("customerName");
