@@ -8,10 +8,12 @@ import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.dbAccessors.CustomerAccessor;
 import scheduler.models.Appointment;
 import scheduler.models.Customer;
+import scheduler.services.localization.UserLocalization;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ResourceBundle;
 
 public class AddAppointmentController extends AppointmentController {
 
@@ -97,17 +99,17 @@ public class AddAppointmentController extends AppointmentController {
         appointment.setAppointmentType(comboType.getValue());
         appointment.setCustomerId(choiceCustomer.getValue().getId());
 
+        ResourceBundle bundle = UserLocalization.getBundle();
+
+        // check for overlap
         boolean hasOverlap = accessor.hasAppointmentOverlap(appointment);
-//        if (!hasOverlap) {
+        if (hasOverlap) {
+            alertText.setText(bundle.getString("alertOverlap"));
+        } else {
             accessor.addAppointment(appointment);
             // close window
             handleExit();
-//        } else {
-//            System.out.println("overlap");
-//        }
-
-
-
+        }
     }
 
 

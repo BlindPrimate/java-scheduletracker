@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.models.Appointment;
+import scheduler.services.localization.TimeUtil;
 import scheduler.services.localization.UserLocalization;
 
 import java.io.IOException;
@@ -103,10 +104,11 @@ public class RootController {
         AppointmentAccessor accessor = new AppointmentAccessor();
         Appointment upcoming = accessor.checkUpcomingAppointments();
         if (upcoming != null) {
+            String start = TimeUtil.toUserTime(upcoming.getStartTime()).format(DateTimeFormatter.ofPattern("hh:mm a"));
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("You have an upcoming appointment with " +
                     upcoming.getCustomerName() +
-                    " at " + upcoming.getStartTimeStamp().toLocalDateTime().format(DateTimeFormatter.ofPattern("hh:mm a")) );
+                    " at " + start);
             alert.showAndWait();
         }
     }

@@ -203,10 +203,12 @@ public class AppointmentAccessor {
     public boolean hasAppointmentOverlap(Appointment appointment) {
         Timestamp start = Timestamp.valueOf(TimeUtil.toUTC(appointment.getStartTime()));
         Timestamp end = Timestamp.valueOf(TimeUtil.toUTC(appointment.getEndTime()));
+
+        // check if queried appointment's start or end times are between any existing appointment's start and end
         String sql = "SELECT * FROM appointment " +
-                "WHERE ((? NOT BETWEEN start AND end) AND (? NOT BETWEEN start AND end)) " +
-                "AND " +
-                "((start NOT BETWEEN ? AND ?) AND (end NOT BETWEEN ? AND ?)) ";
+                "WHERE ((? BETWEEN start AND end) OR (? BETWEEN start AND end)) " +
+                "OR " +
+                "((start BETWEEN ? AND ?) OR (end BETWEEN ? AND ?)) ";
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setTimestamp(1, start);
@@ -216,6 +218,8 @@ public class AppointmentAccessor {
             stmt.setTimestamp(5, start);
             stmt.setTimestamp(6, end);
             ResultSet rs = stmt.executeQuery();
+
+            // if any results found return true
             if (rs.next()) {
                 return true;
             }

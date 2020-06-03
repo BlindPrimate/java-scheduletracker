@@ -33,6 +33,8 @@ public abstract class AppointmentController {
     ComboBox<LocalTime> choiceStartTime;
     @FXML
     ComboBox<LocalTime> choiceEndTime;
+    @FXML
+    TextField alertText;
 
 
 
