@@ -9,6 +9,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import scheduler.services.Authenticator;
+import scheduler.services.LoggerUtil;
 import scheduler.services.localization.UserLocalization;
 
 import java.util.ResourceBundle;
@@ -46,6 +47,13 @@ public class LoginController {
                     stage.show();
                 } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    try {
+                        LoggerUtil loginLog = new LoggerUtil();
+                        loginLog.logon();
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 invalid(bundle.getString("alertPassword"));
