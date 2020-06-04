@@ -52,7 +52,7 @@ public class AppointmentAccessor {
         return appointments;
     }
 
-    public ObservableList<Appointment> getAppointmentsTimeSpan(LocalDateTime fromDate, LocalDateTime toDate) {
+    public ObservableList<Appointment> getAppointmentsTimeSpan(int userId, LocalDateTime fromDate, LocalDateTime toDate) {
 
         try {
             PreparedStatement stm = conn.prepareStatement(
@@ -65,11 +65,13 @@ public class AppointmentAccessor {
                         + "ON appointment.customerId = customer.customerId "
                         + "inner join user "
                         + "ON appointment.userId = user.userId "
-                        + "WHERE appointment.start BETWEEN ? AND ? "
+                        + "WHERE (appointment.start BETWEEN ? AND ?) "
+                        + "AND appointment.userId = ?"
             );
 
             stm.setTimestamp(1, Timestamp.valueOf(fromDate));
             stm.setTimestamp(2, Timestamp.valueOf(toDate));
+            stm.setInt(3, userId);
 
             ResultSet res = stm.executeQuery();
             return createAppointments(res);
@@ -80,20 +82,18 @@ public class AppointmentAccessor {
         return null;
     }
 
-    public ObservableList<Appointment> getWeeklyAppointments() {
-        return getAppointmentsTimeSpan(LocalDateTime.now(), LocalDateTime.now().plusDays(7));
+    public ObservableList<Appointment> getWeeklyAppointments(int userId) {
+        return getAppointmentsTimeSpan(userId, LocalDateTime.now(), LocalDateTime.now().plusDays(7));
     }
 
-    public ObservableList<Appointment> getMonthlyAppointments() {
-        return getAppointmentsTimeSpan(LocalDateTime.now(), LocalDateTime.now().plusMonths(1));
+    public ObservableList<Appointment> getMonthlyAppointments(int userId) {
+        return getAppointmentsTimeSpan(userId, LocalDateTime.now(), LocalDateTime.now().plusMonths(1));
     }
 
-    public ObservableList<Appointment> getAllAppointments() {
+    public ObservableList<Appointment> getAllAppointments(int userId) {
         try {
-            Statement stm = conn.createStatement();
 
-            // retrieve all appointments INNER JOIN with appointment, customer, and user tables
-            ResultSet res = stm.executeQuery("select customer.customerId, customer.customerName, "
+            String sql = "select customer.customerId, customer.customerName, "
                     + "user.userName, user.userId, "
                     + "appointment.appointmentId, appointment.title, appointment.type,"
                     + "appointment.start, appointment.end, appointment.description "
@@ -101,9 +101,12 @@ public class AppointmentAccessor {
                     + "inner join customer "
                     + "on appointment.customerId = customer.customerId "
                     + "inner join user "
-                    + "on appointment.userId = user.userId");
-
-            return createAppointments(res);
+                    + "on appointment.userId = user.userId "
+                    + "WHERE appointment.userId = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            return createAppointments(rs);
         } catch (SQLException e) {
             System.out.println("Error retrieving customer appointment data");
             e.printStackTrace();
@@ -118,10 +121,9 @@ public class AppointmentAccessor {
         LocalDateTime start = TimeUtil.toUTC(appointment.getStartTime());
         LocalDateTime end = TimeUtil.toUTC(appointment.getEndTime());
         try {
-            PreparedStatement stm = conn.prepareStatement(
-                    "INSERT INTO `appointment` VALUES "
-                            + "(default,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,?,CURRENT_TIMESTAMP,?)"
-            );
+            String sql = "INSERT INTO `appointment` VALUES "
+                            + "(default,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,?,CURRENT_TIMESTAMP,?)";
+            PreparedStatement stm = conn.prepareStatement(sql);
             stm.setInt(1, appointment.getCustomerId() ); // customer id
             stm.setInt(2, auth.getUserId() ); // user id
             stm.setString(3, appointment.getTitle() ); // title
@@ -154,12 +156,12 @@ public class AppointmentAccessor {
         }
     }
 
-    public void modifyAppointment(Appointment appointment) {
+    public boolean modifyAppointment(Appointment appointment) {
         Authenticator auth = Authenticator.getInstance();
         LocalDateTime start = TimeUtil.toUTC(appointment.getStartTime());
-        LocalDateTime end = TimeUtil.toUTC(appointment.getStartTime());
+        LocalDateTime end = TimeUtil.toUTC(appointment.getEndTime());
         String sql = "UPDATE appointment " +
-                "SET customerId=?, type=?, start=?, end=? lastUpdate=CURRENT_DATE, lastUpdateBy=? " +
+                "SET customerId=?, type=?, start=?, end=?, lastUpdate=CURRENT_DATE, lastUpdateBy=?, title=? " +
                 "WHERE appointmentId=?";
         try {
             Connection conn = DBConnection.getConnection();
@@ -169,10 +171,13 @@ public class AppointmentAccessor {
             stmt.setTimestamp(3, Timestamp.valueOf(start));  // start time
             stmt.setTimestamp(4, Timestamp.valueOf(end));  // start time
             stmt.setString(5, auth.getUsername());  // last update by
-            stmt.setInt(6, appointment.getId());
-
+            stmt.setString(6, appointment.getTitle());
+            stmt.setInt(7, appointment.getId());
+            stmt.execute();
         } catch(SQLException e) {
             e.printStackTrace();
+        } finally {
+            return true;
         }
 
     }

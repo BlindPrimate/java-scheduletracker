@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.models.Appointment;
+import scheduler.services.Authenticator;
 import scheduler.services.localization.TimeUtil;
 import scheduler.services.localization.UserLocalization;
 
@@ -50,7 +51,7 @@ public class RootController {
     @FXML
     public void initialize() {
 
-        appointments = apptAccessor.getAllAppointments();
+        appointments = apptAccessor.getAllAppointments(Authenticator.getInstance().getUserId());
         appointmentTable.setItems(appointments);
 
         // set time span toggle buttons to allow one clicked at a time
@@ -114,17 +115,17 @@ public class RootController {
     }
 
     public void populateAll() {
-        appointments = apptAccessor.getAllAppointments();
+        appointments = apptAccessor.getAllAppointments(Authenticator.getInstance().getUserId());
         appointmentTable.setItems(appointments);
     }
 
     public void populateWeekly() {
-        appointments = apptAccessor.getWeeklyAppointments();
+        appointments = apptAccessor.getWeeklyAppointments(Authenticator.getInstance().getUserId());
         appointmentTable.setItems(appointments);
     }
 
     public void populateMonthly() {
-        appointments = apptAccessor.getMonthlyAppointments();
+        appointments = apptAccessor.getMonthlyAppointments(Authenticator.getInstance().getUserId());
         appointmentTable.setItems(appointments);
     }
 
