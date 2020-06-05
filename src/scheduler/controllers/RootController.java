@@ -152,6 +152,7 @@ public class RootController {
             newStage.setScene(new Scene(root));
             newStage.showAndWait();
             populateAll();
+            appointmentTable.getSelectionModel().select(0);
         } catch (Exception e) {
             e.printStackTrace();
         }

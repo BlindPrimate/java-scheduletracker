@@ -7,9 +7,11 @@ import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.dbAccessors.CustomerAccessor;
 import scheduler.models.Appointment;
 import scheduler.models.Customer;
+import scheduler.services.localization.UserLocalization;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ResourceBundle;
 
 public class ModifyAppointmentController extends AppointmentController {
 
@@ -92,19 +94,29 @@ public class ModifyAppointmentController extends AppointmentController {
         AppointmentAccessor accessor = new AppointmentAccessor();
 
         // set appointment attributes
-        appointment.setTitle(fieldTitle.getText().trim());
-        appointment.setAppointmentType(comboType.getValue());
-        appointment.setCustomerId(choiceCustomer.getSelectionModel().getSelectedItem().getId());
 
-        LocalDateTime appointmentStart = LocalDateTime.of(choiceStartDate.getValue(), choiceStartTime.getValue());
-        LocalDateTime appointmentEnd = LocalDateTime.of(choiceStartDate.getValue(), choiceEndTime.getValue());
+        if (isValidAppointment()) {
+            ResourceBundle bundle = UserLocalization.getBundle();
+            LocalDateTime appointmentStart = LocalDateTime.of(choiceStartDate.getValue(), choiceStartTime.getValue());
+            LocalDateTime appointmentEnd = LocalDateTime.of(choiceStartDate.getValue(), choiceEndTime.getValue());
 
-        appointment.setStartTime(appointmentStart);
-        appointment.setEndTime(appointmentEnd);
-        accessor.modifyAppointment(appointment);
+            appointment.setTitle(fieldTitle.getText().trim());
+            appointment.setStartTime(appointmentStart);
+            appointment.setEndTime(appointmentEnd);
 
-        // close window
-        handleExit();
+
+            appointment.setCustomerId(choiceCustomer.getValue().getId());
+            appointment.setAppointmentType(comboType.getValue());
+
+            boolean hasOverlap = accessor.hasAppointmentOverlap(appointment);
+            if (!hasOverlap) {
+                accessor.modifyAppointment(appointment);
+                // close window
+                handleExit();
+            } else {
+                alertText.setText(bundle.getString("alertOverlap"));
+            }
+        }
 
     }
 

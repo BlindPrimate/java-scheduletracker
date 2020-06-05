@@ -7,12 +7,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import scheduler.dbAccessors.AppointmentAccessor;
 import scheduler.models.Appointment;
 import scheduler.models.Customer;
+import scheduler.services.localization.UserLocalization;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ResourceBundle;
 
 public abstract class AppointmentController {
 
@@ -69,6 +72,22 @@ public abstract class AppointmentController {
             time = time.plusMinutes(15);
         }
         return appointmentTimes;
+    }
+
+    public boolean isValidAppointment() {
+        AppointmentAccessor accessor = new AppointmentAccessor();
+        ResourceBundle bundle = UserLocalization.getBundle();
+        if (fieldTitle.getText().isBlank()) {
+            alertText.setText(bundle.getString("alertTitle"));
+            return false;
+        } else if (comboType.getValue() == null) {
+            alertText.setText(bundle.getString("alertChooseType"));
+            return false;
+        } else if (choiceCustomer.getValue() == null) {
+            alertText.setText(bundle.getString("alertChooseCustomer"));
+            return false;
+        }
+        return true;
     }
 
     public void handleExit() {

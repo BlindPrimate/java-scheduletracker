@@ -21,7 +21,6 @@ public class AppointmentAccessor {
 
     private ObservableList<Appointment> createAppointments(ResultSet rs) {
 
-
         ObservableList<Appointment> appointments = FXCollections.observableArrayList();
         // loop results and create observable array of appointments
         try {
@@ -102,7 +101,8 @@ public class AppointmentAccessor {
                     + "on appointment.customerId = customer.customerId "
                     + "inner join user "
                     + "on appointment.userId = user.userId "
-                    + "WHERE appointment.userId = ?";
+                    + "WHERE appointment.userId = ? "
+                    + "ORDER BY appointment.start";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
@@ -210,17 +210,19 @@ public class AppointmentAccessor {
 
         // check if queried appointment's start or end times are between any existing appointment's start and end
         String sql = "SELECT * FROM appointment " +
-                "WHERE ((? BETWEEN start AND end) OR (? BETWEEN start AND end)) " +
-                "OR " +
-                "((start BETWEEN ? AND ?) OR (end BETWEEN ? AND ?)) ";
+                "WHERE NOT appointmentId=? AND (((? BETWEEN start AND end) " +
+                "OR (? BETWEEN start AND end)) " +
+                "   OR ((start BETWEEN ? AND ?) " +
+                "OR (end BETWEEN ? AND ?)))";
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setTimestamp(1, start);
-            stmt.setTimestamp(2, end);
-            stmt.setTimestamp(3, start);
-            stmt.setTimestamp(4, end);
-            stmt.setTimestamp(5, start);
-            stmt.setTimestamp(6, end);
+            stmt.setInt(1, appointment.getId());
+            stmt.setTimestamp(2, start);
+            stmt.setTimestamp(3, end);
+            stmt.setTimestamp(4, start);
+            stmt.setTimestamp(5, end);
+            stmt.setTimestamp(6, start);
+            stmt.setTimestamp(7, end);
             ResultSet rs = stmt.executeQuery();
 
             // if any results found return true

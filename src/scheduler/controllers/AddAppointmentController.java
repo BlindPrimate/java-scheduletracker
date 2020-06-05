@@ -82,48 +82,38 @@ public class AddAppointmentController extends AppointmentController {
 
     }
 
+
+
     public void handleSave() {
 
-        ResourceBundle bundle = UserLocalization.getBundle();
         AppointmentAccessor accessor = new AppointmentAccessor();
         Appointment appointment = new Appointment();
 
         // set appointment attributes
-        appointment.setTitle(fieldTitle.getText().trim());
+
+        if (isValidAppointment()) {
+            ResourceBundle bundle = UserLocalization.getBundle();
+            LocalDateTime appointmentStart = LocalDateTime.of(choiceStartDate.getValue(), choiceStartTime.getValue());
+            LocalDateTime appointmentEnd = LocalDateTime.of(choiceStartDate.getValue(), choiceEndTime.getValue());
+
+            appointment.setTitle(fieldTitle.getText().trim());
+            appointment.setStartTime(appointmentStart);
+            appointment.setEndTime(appointmentEnd);
 
 
-        LocalDateTime appointmentStart = LocalDateTime.of(choiceStartDate.getValue(), choiceStartTime.getValue());
-        LocalDateTime appointmentEnd = LocalDateTime.of(choiceStartDate.getValue(), choiceEndTime.getValue());
-
-        appointment.setStartTime(appointmentStart);
-        appointment.setEndTime(appointmentEnd);
-
-        // appointment type validation
-        if (comboType.getValue() != null) {
-            appointment.setAppointmentType(comboType.getValue());
-        } else {
-            alertText.setText(bundle.getString("alertChooseType"));
-            return;
-        }
-
-        // customer validation
-        if (choiceCustomer.getValue() != null) {
             appointment.setCustomerId(choiceCustomer.getValue().getId());
-        } else {
-            alertText.setText(bundle.getString("alertChooseCustomer"));
-            return;
+            appointment.setAppointmentType(comboType.getValue());
+
+            boolean hasOverlap = accessor.hasAppointmentOverlap(appointment);
+            if (!hasOverlap) {
+                accessor.addAppointment(appointment);
+                // close window
+                handleExit();
+            } else {
+                alertText.setText(bundle.getString("alertOverlap"));
+            }
         }
 
-
-        // check for overlap
-        boolean hasOverlap = accessor.hasAppointmentOverlap(appointment);
-        if (hasOverlap) {
-            alertText.setText(bundle.getString("alertOverlap"));
-        } else {
-            accessor.addAppointment(appointment);
-            // close window
-            handleExit();
-        }
     }
 
 
