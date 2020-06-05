@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import scheduler.services.Authenticator;
 import scheduler.services.LoggerUtil;
+import scheduler.services.ReportUtil;
 import scheduler.services.localization.UserLocalization;
 
 import java.util.ResourceBundle;
@@ -36,6 +37,8 @@ public class LoginController {
         if (isUserValid) {
             boolean isAuthorized = auth.login(fieldUser.getText(), fieldPassword.getText());
             if (isAuthorized) {
+                ReportUtil test = new ReportUtil();
+                test.appointmentReport();
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/root.fxml"), bundle);
                     Parent root = loader.load();

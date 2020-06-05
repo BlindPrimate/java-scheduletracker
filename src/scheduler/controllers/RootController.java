@@ -199,6 +199,23 @@ public class RootController {
         }
     }
 
+    public void handleReports() {
+        try {
+            Stage newStage = new Stage();
+            ResourceBundle bundle = UserLocalization.getBundle();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/reports.fxml"), bundle);
+
+            Parent root = loader.load();
+
+            newStage.setTitle(bundle.getString("reports"));
+            newStage.initOwner(appointmentTable.getScene().getWindow());
+            newStage.setScene(new Scene(root));
+            newStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void handleLogout() {
         try {
             Stage primaryStage = new Stage();

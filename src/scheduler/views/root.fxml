@@ -23,6 +23,7 @@
           <Menu mnemonicParsing="false" text="%file">
             <items>
               <MenuItem onAction="#handleManageCustomers" mnemonicParsing="false" text="%manageCustomers" />
+              <MenuItem onAction="#handleReports" mnemonicParsing="false" text="%reports" />
               <MenuItem onAction="#handleLogout" mnemonicParsing="false" text="%logout" />
             </items>
           </Menu>
