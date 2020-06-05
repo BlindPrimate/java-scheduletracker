@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-
-
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="scheduler.controllers.RootController">
    <children>
       <MenuBar>
@@ -42,6 +30,11 @@
         </rowConstraints>
          <children>
             <TableView fx:id="appointmentTable" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3">
+                <placeholder>
+                    <Label>
+                        No Current Appointments Scheduled
+                    </Label>
+                </placeholder>
               <columns>
                   <TableColumn fx:id="colTitle" prefWidth="100.0" text="%title" />
                   <TableColumn fx:id="colCustomer" prefWidth="100.0" text="%customer" />

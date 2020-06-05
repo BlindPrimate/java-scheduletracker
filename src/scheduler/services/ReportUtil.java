@@ -13,7 +13,7 @@ public class ReportUtil {
 
     public String appointmentReport() {
         Connection conn = DBConnection.getConnection();
-        String reportText = new String();
+        String reportText = "";
         String sql = "SELECT " +
         "type, COUNT(*) " +
         "FROM appointment " +
@@ -71,4 +71,32 @@ public class ReportUtil {
         }
         return null;
     }
+
+
+    public String billableHoursReport() {
+        Connection conn = DBConnection.getConnection();
+        String reportText = "";
+        String sql =
+                "SELECT sum(time_to_sec(timediff(appointment.end, appointment.start)) / 60 / 60) AS 'billables', customer.customerName " +
+                "FROM appointment " +
+                "INNER JOIN customer " +
+                "ON appointment.customerId = customer.customerId " +
+                "group by customerName " +
+                "order by customerName";
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                reportText = reportText + "Customer: " + rs.getString("customerName") + "\n" +
+                            "Total Billable Hours: " + rs.getFloat("billables") + "\n\n";
+            }
+            return reportText;
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

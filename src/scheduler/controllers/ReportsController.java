@@ -13,11 +13,14 @@ public class ReportsController {
     private TextArea scheduleReport;
     @FXML
     private TextArea appointmentReport;
+    @FXML
+    private TextArea billableReport;
 
     @FXML
     public void initialize() {
         ReportUtil reports = new ReportUtil();
         scheduleReport.setText(reports.scheduleReport());
         appointmentReport.setText(reports.appointmentReport());
+        billableReport.setText(reports.billableHoursReport());
     }
 }

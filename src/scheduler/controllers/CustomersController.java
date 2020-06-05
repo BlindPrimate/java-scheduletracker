@@ -4,17 +4,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import scheduler.dbAccessors.CustomerAccessor;
 import scheduler.models.Customer;
 import scheduler.services.localization.UserLocalization;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class CustomersController {
@@ -45,11 +47,6 @@ public class CustomersController {
     }
 
 
-    private void addTableRefresh(Stage stage) {
-        stage.addEventHandler(WindowEvent.WINDOW_HIDDEN, windowEvent -> {
-            populateTable();
-        });
-    }
 
     @FXML
     public void handleAddCustomer() {
@@ -59,11 +56,12 @@ public class CustomersController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/addCustomers.fxml"), bundle);
             loader.setController(new AddCustomerController());
             Parent root = loader.load();
+
             // refresh table when returning from add customer screen
-            addTableRefresh(primaryStage);
             primaryStage.setTitle(bundle.getString("addCustomer"));
             primaryStage.setScene(new Scene(root));
-            primaryStage.show();
+            primaryStage.showAndWait();
+            populateTable();
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -75,12 +73,15 @@ public class CustomersController {
             Stage primaryStage = new Stage();
             ResourceBundle bundle = UserLocalization.getBundle();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/addCustomers.fxml"), bundle);
-            loader.setController(new ModifyCustomerController(tableCustomers.getSelectionModel().getSelectedItem()));
-            addTableRefresh(primaryStage);
-            Parent root = loader.load();
-            primaryStage.setTitle(bundle.getString("modifyCustomer"));
-            primaryStage.setScene(new Scene(root));
-            primaryStage.show();
+            if (tableCustomers.getSelectionModel().getSelectedItem() != null) {
+                loader.setController(new ModifyCustomerController(tableCustomers.getSelectionModel().getSelectedItem()));
+                Parent root = loader.load();
+                primaryStage.setTitle(bundle.getString("modifyCustomer"));
+                primaryStage.setScene(new Scene(root));
+                primaryStage.showAndWait();
+                populateTable();
+                tableCustomers.refresh();
+            }
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -88,9 +89,17 @@ public class CustomersController {
 
     @FXML
     public void handleDeleteCustomer() {
-        CustomerAccessor accessor = new CustomerAccessor();
-        accessor.deleteCustomer(tableCustomers.getSelectionModel().getSelectedItem());
-        populateTable();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText("Are you sure you wish to delete this customer?");
+        alert.setTitle("Delete Customer");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            CustomerAccessor accessor = new CustomerAccessor();
+            accessor.deleteCustomer(tableCustomers.getSelectionModel().getSelectedItem());
+            populateTable();
+        } else {
+            alert.close();
+        }
     }
 
     @FXML

@@ -6,10 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -23,6 +20,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 
@@ -50,6 +48,11 @@ public class RootController {
 
     @FXML
     public void initialize() {
+
+
+        /*
+        EVALUATOR -- Plenty of lambda examples throughout this controller -- various uses, mostly to reduce boiler-plate code
+         */
 
         appointments = apptAccessor.getAllAppointments(Authenticator.getInstance().getUserId());
         appointmentTable.setItems(appointments);
@@ -79,6 +82,11 @@ public class RootController {
         // set column cell values
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colType.setCellValueFactory(new PropertyValueFactory<>("appointmentType"));
+
+
+        /*
+        EVALUATOR  -- use of lambdas here to avoid confusing and difficult to read boiler-plate code
+        */
         colStartTime.setCellValueFactory(columnData -> {
             String t = columnData.getValue().getStartTimeStamp().toLocalDateTime().format(readableTime);
             return new SimpleObjectProperty<>(t);
@@ -139,13 +147,11 @@ public class RootController {
             Parent root = loader.load();
 
             // refresh table of appointments on return to main screen
-            newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
-                populateAll();
-            });
             newStage.initOwner(appointmentTable.getScene().getWindow());
             newStage.setTitle(bundle.getString("addAppointment"));
             newStage.setScene(new Scene(root));
-            newStage.show();
+            newStage.showAndWait();
+            populateAll();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -162,6 +168,10 @@ public class RootController {
             loader.setController(controller);
             Parent root = loader.load();
 
+            /*
+            * EVALUATOR -- Good lambda use to keep from having a lot of boiler-plate code with method overrides
+            * */
+
             // refresh table of appointments on return to main screen
             newStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
                 populateAll();
@@ -169,7 +179,8 @@ public class RootController {
             newStage.setTitle(bundle.getString("modifyAppointment"));
             newStage.initOwner(appointmentTable.getScene().getWindow());
             newStage.setScene(new Scene(root));
-            newStage.show();
+            newStage.showAndWait();
+            populateAll();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -178,8 +189,16 @@ public class RootController {
     public void handleDeleteButton() {
         AppointmentAccessor accessor = new AppointmentAccessor();
         Appointment appt = appointmentTable.getSelectionModel().getSelectedItem();
-        accessor.deleteAppointment(appt.getId());
-        appointments.remove(appointmentTable.getSelectionModel().getSelectedIndex());
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText("Are you sure you wish to delete this appointment?");
+        alert.setTitle("Delete Appointment");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            accessor.deleteAppointment(appt.getId());
+            appointments.remove(appointmentTable.getSelectionModel().getSelectedIndex());
+        } else {
+            alert.close();
+        }
     }
 
     public void handleManageCustomers() {

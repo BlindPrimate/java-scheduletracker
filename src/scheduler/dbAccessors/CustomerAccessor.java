@@ -9,14 +9,13 @@ import java.sql.*;
 
 public class CustomerAccessor {
 
-    private ObservableList<Customer> customers = FXCollections.observableArrayList();
-    private ObservableList<String> customerNames = FXCollections.observableArrayList();
     private Connection conn = DBConnection.getConnection();
 
     public CustomerAccessor() {
     }
 
     public ObservableList<Customer> getAllCustomers() {
+        ObservableList<Customer> customers = FXCollections.observableArrayList();
         try {
             Statement stm = conn.createStatement();
             ResultSet res = stm.executeQuery("select customer.*, address.* FROM customer INNER JOIN address ON customer.addressId = address.addressId");
@@ -93,13 +92,13 @@ public class CustomerAccessor {
             stm1.executeUpdate();
 
             String sqlAddress = "UPDATE address " +
-                            "SET address=?, phone=?, lastUpdateBy=?, lastUpdate=CURRENT_DATE" +
+                            "SET address=?, phone=?, lastUpdateBy=?, lastUpdate=CURRENT_DATE " +
                             "WHERE addressId=?";
             PreparedStatement stm2 = conn.prepareStatement(sqlAddress);
             stm2.setString(1,customer.getAddress());
             stm2.setString(2,customer.getPhone());
-            stm2.setInt(3, customer.getAddressId());
-            stm2.setString(4, auth.getUsername());
+            stm2.setString(3, auth.getUsername());
+            stm2.setInt(4, customer.getAddressId());
             stm2.executeUpdate();
             conn.commit();
             return 1;
