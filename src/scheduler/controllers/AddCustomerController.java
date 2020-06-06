@@ -31,6 +31,7 @@ public class AddCustomerController {
 
     @FXML
     public void handleSave() {
+        labelAlert.setText("");
         String name = fieldName.getText();
         String address = fieldAddress.getText();
         String phone = fieldPhone.getText();
