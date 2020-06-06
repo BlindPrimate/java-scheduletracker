@@ -213,7 +213,8 @@ public class RootController {
             newStage.setTitle(bundle.getString("manageCustomers"));
             newStage.initOwner(appointmentTable.getScene().getWindow());
             newStage.setScene(new Scene(root));
-            newStage.show();
+            newStage.showAndWait();
+            populateAll();
         } catch (Exception e) {
             e.printStackTrace();
         }

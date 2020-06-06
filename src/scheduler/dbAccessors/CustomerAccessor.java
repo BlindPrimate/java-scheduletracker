@@ -9,13 +9,13 @@ import java.sql.*;
 
 public class CustomerAccessor {
 
-    private Connection conn = DBConnection.getConnection();
 
     public CustomerAccessor() {
     }
 
     public ObservableList<Customer> getAllCustomers() {
         ObservableList<Customer> customers = FXCollections.observableArrayList();
+        Connection conn = DBConnection.getConnection();
         try {
             Statement stm = conn.createStatement();
             ResultSet res = stm.executeQuery("select customer.*, address.* FROM customer INNER JOIN address ON customer.addressId = address.addressId");
@@ -39,6 +39,7 @@ public class CustomerAccessor {
 
     public int addCustomer(Customer customer) {
         Authenticator auth = Authenticator.getInstance();
+        Connection conn = DBConnection.getConnection();
         try {
             PreparedStatement stm1 = conn.prepareStatement(
                     "INSERT INTO address"+
@@ -80,6 +81,7 @@ public class CustomerAccessor {
 
     public int updateCustomer(Customer customer) {
 
+        Connection conn = DBConnection.getConnection();
         Authenticator auth = Authenticator.getInstance();
         try {
             conn.setAutoCommit(false);
@@ -109,17 +111,24 @@ public class CustomerAccessor {
         return 0;
     }
 
-    public int deleteCustomer(Customer customer) {
+    public void deleteCustomer(Customer customer) {
+        Connection conn = DBConnection.getConnection();
         try {
-            String sql = "DELETE FROM customer WHERE customerId = ?";
-            PreparedStatement stm = conn.prepareStatement(sql);
-            stm.setInt(1, customer.getId());
-            return stm.executeUpdate();
+            conn.setAutoCommit(false);
+            String sql1 = "DELETE FROM appointment WHERE customerId = ?";
+            PreparedStatement stm1 = conn.prepareStatement(sql1);
+            stm1.setInt(1, customer.getId());
+            String sql2 = "DELETE FROM customer WHERE customerId = ?";
+            PreparedStatement stm2 = conn.prepareStatement(sql2);
+            stm2.setInt(1, customer.getId());
+
+            stm1.executeUpdate();
+            stm2.executeUpdate();
+            conn.commit();
         } catch (SQLException e) {
             System.out.println("Error deleting customer");
             e.printStackTrace();
         }
-        return 0;
     }
 
 

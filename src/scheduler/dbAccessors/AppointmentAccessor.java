@@ -210,7 +210,8 @@ public class AppointmentAccessor {
 
         // check if queried appointment's start or end times are between any existing appointment's start and end
         String sql = "SELECT * FROM appointment " +
-                "WHERE NOT appointmentId=? AND (((? BETWEEN start AND end) " +
+                "WHERE NOT appointmentId=? " +
+                "AND (((? BETWEEN start AND end) " +
                 "OR (? BETWEEN start AND end)) " +
                 "   OR ((start BETWEEN ? AND ?) " +
                 "OR (end BETWEEN ? AND ?)))";
